@@ -1,4 +1,4 @@
-```javascript
+
 // ==========================================
 // Stock Analysis - Main JavaScript
 // Part 2
