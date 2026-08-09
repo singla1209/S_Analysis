@@ -67,7 +67,7 @@ if (analysisDateInput) {
 
 function testDataLayer() {
 
-    const data = getDemoData("TCS");
+const data = await loadStockCSV("TCS");
 
     console.log("Historical data:", data);
 
