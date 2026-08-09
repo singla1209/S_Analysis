@@ -301,6 +301,20 @@ function calculateDailyChange(data) {
     return Number(change.toFixed(2));
 }
 
+function percentageChange(oldValue, newValue) {
+
+    if (
+        !Number.isFinite(oldValue) ||
+        !Number.isFinite(newValue) ||
+        oldValue === 0
+    ) {
+        return 0;
+    }
+
+    return (
+        ((newValue - oldValue) / oldValue) * 100
+    );
+}
 
 // ==========================================
 // EXPORT FUNCTIONS
@@ -312,5 +326,6 @@ export {
     getLatestSession,
     getLatestTradingDay,
     getLastSessions,
-    calculateDailyChange
+    calculateDailyChange,
+    percentageChange
 };
