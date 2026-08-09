@@ -5,11 +5,11 @@
 // ==========================================
 
 import {
-    getDemoData,
-    getLatestTradingDay,
+    loadStockCSV,
+    validateHistoricalData,
+    getLatestSession,
     getLastSessions,
-    percentageChange,
-    validateHistoricalData
+    calculateDailyChange
 } from "./data-provider.js";
 
 
