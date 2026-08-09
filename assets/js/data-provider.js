@@ -1,4 +1,4 @@
-```javascript
+
 // ==========================================
 // Stock Analysis - Data Provider
 // Part 2
