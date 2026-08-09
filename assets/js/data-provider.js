@@ -225,4 +225,5 @@ export function getDemoData(symbol = "TCS") {
 
 
 console.log("Data Provider - Part 2 loaded");
-```
+
+
