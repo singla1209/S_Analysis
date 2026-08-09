@@ -8,8 +8,10 @@ import {
     loadStockCSV,
     validateHistoricalData,
     getLatestSession,
+    getLatestTradingDay,
     getLastSessions,
-    calculateDailyChange
+    calculateDailyChange,
+    percentageChange
 } from "./data-provider.js";
 
 
