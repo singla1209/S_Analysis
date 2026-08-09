@@ -14,6 +14,10 @@ import {
     percentageChange
 } from "./data-provider.js";
 
+import {
+    NIFTY50_STOCKS
+} from "./nifty50.js";
+
 
 console.log("Stock Analysis - Part 2 loaded");
 
@@ -68,6 +72,18 @@ if (analysisDateInput) {
 // ==========================================
 
 async function testDataLayer() {
+
+      console.log("Starting historical data test...");
+
+    console.log(
+        "NIFTY 50 stocks:",
+        NIFTY50_STOCKS
+    );
+
+    console.log(
+        "Total NIFTY 50 stocks:",
+        NIFTY50_STOCKS.length
+    );
 
 const data = await loadStockCSV("TCS");
 
