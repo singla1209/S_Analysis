@@ -1,5 +1,6 @@
 // ==========================================
 // NIFTY 50 STOCK CONFIGURATION
+// Current constituent list
 // ==========================================
 
 const NIFTY50_STOCKS = [
@@ -22,11 +23,10 @@ const NIFTY50_STOCKS = [
     "HCLTECH",
     "HDFCBANK",
     "HDFCLIFE",
-    "HEROMOTOCO",
     "HINDALCO",
     "HINDUNILVR",
     "ICICIBANK",
-    "INDUSINDBK",
+    "INDIGO",
     "INFY",
     "ITC",
     "JIOFIN",
@@ -35,6 +35,7 @@ const NIFTY50_STOCKS = [
     "LT",
     "M&M",
     "MARUTI",
+    "MAXHEALTH",
     "NESTLEIND",
     "NTPC",
     "ONGC",
@@ -45,13 +46,14 @@ const NIFTY50_STOCKS = [
     "SHRIRAMFIN",
     "SUNPHARMA",
     "TATACONSUM",
-    "TATAMOTORS",
     "TATASTEEL",
     "TCS",
     "TECHM",
     "TITAN",
+    "TMPV",
     "TRENT",
-    "ULTRACEMCO"
+    "ULTRACEMCO",
+    "WIPRO"
 ];
 
 console.log(
