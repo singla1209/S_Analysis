@@ -65,7 +65,7 @@ if (analysisDateInput) {
 // TEST DATA
 // ==========================================
 
-function testDataLayer() {
+async function testDataLayer() {
 
 const data = await loadStockCSV("TCS");
 
