@@ -263,7 +263,10 @@ function getLatestSession(data) {
     return data[data.length - 1];
 }
 
+function getLatestTradingDay(data) {
 
+    return getLatestSession(data);
+}
 // ==========================================
 // GET LAST N SESSIONS
 // ==========================================
@@ -307,6 +310,7 @@ export {
     loadStockCSV,
     validateHistoricalData,
     getLatestSession,
+    getLatestTradingDay,
     getLastSessions,
     calculateDailyChange
 };
