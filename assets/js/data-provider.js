@@ -1,151 +1,220 @@
-
 // ==========================================
-// Stock Analysis - Data Provider
-// Part 2
-// ==========================================
-//
-// IMPORTANT:
-// This file creates a standard format for our
-// historical stock data.
-//
-// The analysis engine will NOT depend directly
-// on any particular API.
-//
-// Standard format:
-//
-// {
-//     symbol: "TCS",
-//     date: "2026-08-07",
-//     open: 3000,
-//     high: 3050,
-//     low: 2980,
-//     close: 3035,
-//     volume: 1234567
-// }
-//
+// STOCK DATA PROVIDER - PART 3
+// Reads real Yahoo Finance CSV data
 // ==========================================
 
-
-/**
- * Convert one raw price record into our
- * standard OHLCV format.
- *
- * We will connect the actual free data source
- * in the next step.
- */
-export function normalizePriceRecord(record) {
-
-    return {
-        symbol: record.symbol || "",
-        date: record.date || "",
-
-        open: Number(record.open) || 0,
-        high: Number(record.high) || 0,
-        low: Number(record.low) || 0,
-        close: Number(record.close) || 0,
-        volume: Number(record.volume) || 0
-    };
-}
+console.log("Data Provider - Part 3 loaded");
 
 
-/**
- * Normalize an entire historical dataset.
- */
-export function normalizeHistoricalData(records) {
+// ==========================================
+// CSV FILE PATHS
+// ==========================================
 
-    if (!Array.isArray(records)) {
-        return [];
+const STOCK_FILES = {
+    TCS: "data/TCS.NS.csv"
+};
+
+
+// ==========================================
+// LOAD CSV FILE
+// ==========================================
+
+async function loadStockCSV(symbol) {
+
+    const filePath = STOCK_FILES[symbol];
+
+    if (!filePath) {
+        throw new Error(`No CSV file configured for ${symbol}`);
     }
 
-    return records
-        .map(normalizePriceRecord)
-        .filter(item => item.date && item.close > 0)
-        .sort((a, b) => {
-            return new Date(a.date) - new Date(b.date);
-        });
+    console.log(`Loading CSV for ${symbol}:`, filePath);
+
+    const response = await fetch(filePath);
+
+    if (!response.ok) {
+        throw new Error(
+            `Unable to load ${filePath}. HTTP ${response.status}`
+        );
+    }
+
+    const csvText = await response.text();
+
+    return parseCSV(csvText);
 }
 
 
-/**
- * Get the latest completed trading day.
- */
-export function getLatestTradingDay(records) {
+// ==========================================
+// CSV PARSER
+// ==========================================
 
-    if (!records || records.length === 0) {
+function parseCSV(csvText) {
+
+    const lines = csvText
+        .trim()
+        .split(/\r?\n/);
+
+    if (lines.length < 2) {
+        throw new Error("CSV file contains no data.");
+    }
+
+    // Remove BOM if present
+    lines[0] = lines[0].replace(/^\uFEFF/, "");
+
+    const headers = lines[0]
+        .split(",")
+        .map(header => header.trim());
+
+    console.log("CSV headers:", headers);
+
+    const data = [];
+
+    for (let i = 1; i < lines.length; i++) {
+
+        if (!lines[i].trim()) {
+            continue;
+        }
+
+        const values = lines[i].split(",");
+
+        if (values.length < headers.length) {
+            continue;
+        }
+
+        const row = {};
+
+        headers.forEach((header, index) => {
+            row[header] = values[index].trim();
+        });
+
+        const record = {
+
+            date: normalizeDate(row["Date"]),
+
+            open: Number(row["Open"]),
+
+            high: Number(row["High"]),
+
+            low: Number(row["Low"]),
+
+            close: Number(row["Close"]),
+
+            adjustedClose: Number(
+                row["Adjusted Close"] ?? row["Adj Close"]
+            ),
+
+            volume: Number(row["Volume"])
+
+        };
+
+        // Validate numeric data
+        if (
+            !record.date ||
+            !Number.isFinite(record.open) ||
+            !Number.isFinite(record.high) ||
+            !Number.isFinite(record.low) ||
+            !Number.isFinite(record.close) ||
+            !Number.isFinite(record.volume)
+        ) {
+            continue;
+        }
+
+        data.push(record);
+    }
+
+    // Sort oldest → newest
+    data.sort(
+        (a, b) => a.date.localeCompare(b.date)
+    );
+
+    console.log(
+        `Parsed ${data.length} valid records`
+    );
+
+    return data;
+}
+
+
+// ==========================================
+// DATE NORMALIZATION
+// ==========================================
+
+function normalizeDate(dateString) {
+
+    if (!dateString) {
         return null;
     }
 
-    return records[records.length - 1];
-}
+    // Yahoo normally uses YYYY-MM-DD.
+    // Your Excel example displays DD-MM-YYYY.
+    // Handle both formats.
 
-
-/**
- * Get the last N trading sessions.
- */
-export function getLastSessions(records, numberOfDays) {
-
-    if (!Array.isArray(records)) {
-        return [];
+    if (/^\d{4}-\d{2}-\d{2}$/.test(dateString)) {
+        return dateString;
     }
 
-    return records.slice(-numberOfDays);
-}
+    if (/^\d{2}-\d{2}-\d{4}$/.test(dateString)) {
 
+        const parts = dateString.split("-");
 
-/**
- * Calculate percentage change between
- * two closing prices.
- */
-export function percentageChange(oldPrice, newPrice) {
+        const day = parts[0];
+        const month = parts[1];
+        const year = parts[2];
 
-    if (!oldPrice || oldPrice === 0) {
-        return 0;
+        return `${year}-${month}-${day}`;
     }
 
-    return ((newPrice - oldPrice) / oldPrice) * 100;
+    return null;
 }
 
 
-/**
- * Basic data validation.
- *
- * This prevents bad/incomplete API data
- * from entering our analysis engine.
- */
-export function validateHistoricalData(records) {
+// ==========================================
+// VALIDATE HISTORICAL DATA
+// ==========================================
 
-    if (!Array.isArray(records) || records.length === 0) {
+function validateHistoricalData(data) {
+
+    if (!Array.isArray(data)) {
         return {
             valid: false,
-            message: "No historical data available."
+            message: "Data is not an array."
         };
     }
 
-    for (const row of records) {
+    if (data.length === 0) {
+        return {
+            valid: false,
+            message: "No valid historical records found."
+        };
+    }
 
-        if (!row.date) {
+    for (const row of data) {
+
+        if (
+            !row.date ||
+            !Number.isFinite(row.open) ||
+            !Number.isFinite(row.high) ||
+            !Number.isFinite(row.low) ||
+            !Number.isFinite(row.close) ||
+            !Number.isFinite(row.volume)
+        ) {
+
             return {
                 valid: false,
-                message: "Missing date in historical data."
+                message: "Invalid record found."
             };
         }
 
         if (
-            row.open <= 0 ||
-            row.high <= 0 ||
-            row.low <= 0 ||
-            row.close <= 0
+            row.high < row.low ||
+            row.high < row.open ||
+            row.high < row.close ||
+            row.low > row.open ||
+            row.low > row.close
         ) {
-            return {
-                valid: false,
-                message: `Invalid price data for ${row.date}.`
-            };
-        }
 
-        if (row.high < row.low) {
             return {
                 valid: false,
-                message: `High is lower than Low on ${row.date}.`
+                message: `Invalid OHLC values on ${row.date}.`
             };
         }
     }
@@ -157,73 +226,63 @@ export function validateHistoricalData(records) {
 }
 
 
-/**
- * Temporary test data.
- *
- * This is ONLY for checking that Part 2 works.
- * It is NOT real market data.
- *
- * We will remove this after connecting
- * the actual historical-data source.
- */
-export function getDemoData(symbol = "TCS") {
+// ==========================================
+// GET LATEST SESSION
+// ==========================================
 
-    return normalizeHistoricalData([
+function getLatestSession(data) {
 
-        {
-            symbol,
-            date: "2026-08-03",
-            open: 2975,
-            high: 3015,
-            low: 2960,
-            close: 3000,
-            volume: 1000000
-        },
+    if (!data || data.length === 0) {
+        return null;
+    }
 
-        {
-            symbol,
-            date: "2026-08-04",
-            open: 3005,
-            high: 3030,
-            low: 2990,
-            close: 3020,
-            volume: 1200000
-        },
-
-        {
-            symbol,
-            date: "2026-08-05",
-            open: 3025,
-            high: 3040,
-            low: 3000,
-            close: 3010,
-            volume: 1100000
-        },
-
-        {
-            symbol,
-            date: "2026-08-06",
-            open: 3015,
-            high: 3045,
-            low: 3005,
-            close: 3030,
-            volume: 1350000
-        },
-
-        {
-            symbol,
-            date: "2026-08-07",
-            open: 3035,
-            high: 3060,
-            low: 3020,
-            close: 3050,
-            volume: 1600000
-        }
-
-    ]);
+    return data[data.length - 1];
 }
 
 
-console.log("Data Provider - Part 2 loaded");
+// ==========================================
+// GET LAST N SESSIONS
+// ==========================================
+
+function getLastSessions(data, count = 5) {
+
+    if (!data || data.length === 0) {
+        return [];
+    }
+
+    return data.slice(-count);
+}
 
 
+// ==========================================
+// DAILY CHANGE
+// ==========================================
+
+function calculateDailyChange(data) {
+
+    if (!data || data.length < 2) {
+        return null;
+    }
+
+    const previous = data[data.length - 2];
+    const latest = data[data.length - 1];
+
+    const change =
+        ((latest.close - previous.close) /
+            previous.close) * 100;
+
+    return Number(change.toFixed(2));
+}
+
+
+// ==========================================
+// EXPORT FUNCTIONS
+// ==========================================
+
+export {
+    loadStockCSV,
+    validateHistoricalData,
+    getLatestSession,
+    getLastSessions,
+    calculateDailyChange
+};
