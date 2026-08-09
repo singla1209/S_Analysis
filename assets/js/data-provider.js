@@ -57,12 +57,14 @@ function parseCSV(csvText) {
         throw new Error("CSV file contains no data.");
     }
 
-    // Remove BOM if present
+    // Remove BOM
     lines[0] = lines[0].replace(/^\uFEFF/, "");
 
     const headers = lines[0]
         .split(",")
-        .map(header => header.trim());
+        .map(header =>
+            header.trim().replace(/^"|"$/g, "")
+        );
 
     console.log("CSV headers:", headers);
 
@@ -74,16 +76,24 @@ function parseCSV(csvText) {
             continue;
         }
 
-        const values = lines[i].split(",");
+        let values = lines[i]
+            .split(",")
+            .map(value =>
+                value.trim().replace(/^"|"$/g, "")
+            );
 
         if (values.length < headers.length) {
+            console.warn(
+                "Skipping row because column count is wrong:",
+                lines[i]
+            );
             continue;
         }
 
         const row = {};
 
         headers.forEach((header, index) => {
-            row[header] = values[index].trim();
+            row[header] = values[index];
         });
 
         const record = {
@@ -99,14 +109,16 @@ function parseCSV(csvText) {
             close: Number(row["Close"]),
 
             adjustedClose: Number(
-                row["Adjusted Close"] ?? row["Adj Close"]
+                row["Adjusted Close"] ||
+                row["Adj Close"]
             ),
 
-            volume: Number(row["Volume"])
+            volume: Number(
+                String(row["Volume"]).replace(/,/g, "")
+            )
 
         };
 
-        // Validate numeric data
         if (
             !record.date ||
             !Number.isFinite(record.open) ||
@@ -115,15 +127,22 @@ function parseCSV(csvText) {
             !Number.isFinite(record.close) ||
             !Number.isFinite(record.volume)
         ) {
+
+            console.warn(
+                "Skipping invalid row:",
+                row
+            );
+
             continue;
         }
 
         data.push(record);
     }
 
-    // Sort oldest → newest
+    // Oldest → newest
     data.sort(
-        (a, b) => a.date.localeCompare(b.date)
+        (a, b) =>
+            a.date.localeCompare(b.date)
     );
 
     console.log(
@@ -144,28 +163,33 @@ function normalizeDate(dateString) {
         return null;
     }
 
-    // Yahoo normally uses YYYY-MM-DD.
-    // Your Excel example displays DD-MM-YYYY.
-    // Handle both formats.
+    dateString = String(dateString)
+        .trim()
+        .replace(/^"|"$/g, "");
 
+    // YYYY-MM-DD
     if (/^\d{4}-\d{2}-\d{2}$/.test(dateString)) {
         return dateString;
     }
 
+    // DD-MM-YYYY
     if (/^\d{2}-\d{2}-\d{4}$/.test(dateString)) {
 
         const parts = dateString.split("-");
 
-        const day = parts[0];
-        const month = parts[1];
-        const year = parts[2];
+        return `${parts[2]}-${parts[1]}-${parts[0]}`;
+    }
 
-        return `${year}-${month}-${day}`;
+    // DD/MM/YYYY
+    if (/^\d{2}\/\d{2}\/\d{4}$/.test(dateString)) {
+
+        const parts = dateString.split("/");
+
+        return `${parts[2]}-${parts[1]}-${parts[0]}`;
     }
 
     return null;
 }
-
 
 // ==========================================
 // VALIDATE HISTORICAL DATA
