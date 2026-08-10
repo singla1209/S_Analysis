@@ -700,6 +700,50 @@ function renderFactorRanking(rankedResults) {
 
     }).join("");
 }
+
+function renderTop10Stocks(rankedResults) {
+    const tableBody = document.getElementById("topStocksBody");
+
+    if (!tableBody) {
+        console.error("topStocksBody not found");
+        return;
+    }
+
+    const top10 = rankedResults.slice(0, 10);
+
+    tableBody.innerHTML = top10.map((stock, index) => `
+        <tr>
+            <td><strong>${index + 1}</strong></td>
+
+            <td>
+                <strong>${stock.symbol}</strong>
+            </td>
+
+            <td>
+                ₹${Number(stock.price ?? 0).toFixed(2)}
+            </td>
+
+            <td>
+                <strong>${Number(stock.finalFactorScore ?? 0).toFixed(1)}</strong>
+            </td>
+
+            <td>
+                ${stock.finalFactorScore >= 6 ? "Bullish" : "Neutral"}
+            </td>
+
+            <td>
+                ${Number(stock.finalFactorScore ?? 0) >= 7 ? "High" :
+                  Number(stock.finalFactorScore ?? 0) >= 5 ? "Medium" : "Low"}
+            </td>
+
+            <td>
+                <button class="btn btn-sm btn-outline-primary">
+                    View
+                </button>
+            </td>
+        </tr>
+    `).join("");
+}
 // ==========================================
 // UPDATE INDIVIDUAL STOCK CARDS
 // ==========================================
@@ -1000,6 +1044,9 @@ console.table(
  console.log("ONE RANKED STOCK FULL:", JSON.stringify(rankedResults[0], null, 2));
 
 renderFactorRanking(rankedResults);
+
+// NEW — render Top 10 table
+renderTop10Stocks(rankedResults);
 
 // Render table
 renderStockAnalysis(
