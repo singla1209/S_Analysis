@@ -382,7 +382,7 @@ if (runAnalysisBtn) {
     );
 }
 
-checkAllStockData();
+//checkAllStockData();
 
 async function testAnalyzeStock() {
 
