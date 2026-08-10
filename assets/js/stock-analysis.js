@@ -904,7 +904,9 @@ const resultsWithFactors =
 const rankedResults =
     rankStocksByFactorScore(resultsWithFactors);
 
-        console.table(
+       console.log("===== FACTOR RANKING =====");
+
+console.table(
     rankedResults.map((stock, index) => ({
         rank: index + 1,
         symbol: stock.symbol,
