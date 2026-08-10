@@ -77,6 +77,109 @@ if (analysisDateInput) {
 // TEST DATA
 // ==========================================
 
+
+async function analyzeStock(symbol) {
+
+    console.log(`Analyzing ${symbol}...`);
+
+    try {
+
+        // Load historical data
+        const data =
+            await loadStockCSV(symbol);
+
+        // Validate
+        const validation =
+            validateHistoricalData(data);
+
+        if (!validation.valid) {
+
+            return {
+                symbol,
+                valid: false,
+                message: validation.message
+            };
+        }
+
+        // Latest session
+        const latest =
+            getLatestSession(data);
+
+        const price =
+            latest.close;
+
+        // Returns
+        const return5 =
+            calculateReturn(data, 5);
+
+        const return20 =
+            calculateReturn(data, 20);
+
+        // Moving averages
+        const ma20 =
+            calculateMovingAverage(data, 20);
+
+        const ma50 =
+            calculateMovingAverage(data, 50);
+
+        // RSI
+        const rsi =
+            calculateRSI(data, 14);
+
+        // Volume
+        const volumeRatio =
+            calculateVolumeRatio(data, 20);
+
+        // Price position
+        const priceVsMA20 =
+            calculatePriceVsMA(price, ma20);
+
+        const priceVsMA50 =
+            calculatePriceVsMA(price, ma50);
+
+        // Daily change
+        const dailyChange =
+            calculateDailyChange(data);
+
+        return {
+
+            symbol,
+            valid: true,
+
+            date: latest.date,
+            price,
+
+            dailyChange,
+
+            return5,
+            return20,
+
+            ma20,
+            ma50,
+
+            rsi,
+
+            volumeRatio,
+
+            priceVsMA20,
+            priceVsMA50
+        };
+
+    } catch (error) {
+
+        console.error(
+            `Error analyzing ${symbol}:`,
+            error
+        );
+
+        return {
+            symbol,
+            valid: false,
+            message: error.message
+        };
+    }
+}
+
 async function testDataLayer() {
 
       console.log("Starting historical data test...");
@@ -280,4 +383,18 @@ if (runAnalysisBtn) {
 }
 
 checkAllStockData();
+
+async function testAnalyzeStock() {
+
+    const result =
+        await analyzeStock("TCS");
+
+    console.log(
+        "===== TCS ANALYSIS ====="
+    );
+
+    console.table(result);
+}
+
+testAnalyzeStock();
 
