@@ -409,19 +409,57 @@ if (runAnalysisBtn) {
         }
     );
 }
+
 //checkAllStockData();
 
-async function testAnalyzeStock() {
 
-    const result =
-        await analyzeStock("TCS");
+// ==========================================
+// TEST ALL NIFTY 50 STOCKS
+// ==========================================
 
-    console.log(
-        "===== TCS ANALYSIS ====="
-    );
+async function testAnalyzeAllStocks() {
 
-    console.table(result);
+    console.log("======================================");
+    console.log("RUNNING NIFTY 50 ANALYSIS");
+    console.log("Total stocks:", NIFTY50_STOCKS.length);
+    console.log("======================================");
+
+    const results = [];
+
+    for (const symbol of NIFTY50_STOCKS) {
+
+        const result =
+            await analyzeStock(symbol);
+
+        results.push(result);
+
+        console.log(
+            `${symbol}:`,
+            result.valid ? "OK" : "FAILED"
+        );
+    }
+
+    console.log("======================================");
+    console.log("NIFTY 50 ANALYSIS COMPLETE");
+    console.log("======================================");
+
+    console.table(results);
+
+    return results;
 }
+
+testAnalyzeAllStocks()
+    .then(() => {
+        console.log(
+            "ALL STOCK ANALYSIS TEST FINISHED"
+        );
+    })
+    .catch(error => {
+        console.error(
+            "ALL STOCK ANALYSIS TEST ERROR:",
+            error
+        );
+    });
 
 analyzeAllStocks()
     .then(results => {
