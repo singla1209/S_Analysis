@@ -938,7 +938,25 @@ const resultsWithFactors =
 
 const rankedResults =
     rankStocksByFactorScore(resultsWithFactors);
+const top10Stocks = rankedResults.slice(0, 10);
 
+console.table(
+    top10Stocks.map((stock, index) => ({
+        rank: index + 1,
+        symbol: stock.symbol,
+        trend: stock.factorTrend,
+        volume: stock.factorVolume,
+        support: stock.factorSupport,
+        technical: stock.factorTechnical,
+        candle: stock.factorCandle,
+        nifty: stock.factorNifty,
+        sector: stock.factorSector,
+        news: stock.factorNews,
+        fno: stock.factorFno,
+        sentiment: stock.factorSentiment,
+        finalScore: stock.finalFactorScore
+    }))
+);
  console.log("ONE RANKED STOCK FULL:", JSON.stringify(rankedResults[0], null, 2));
 
 renderFactorRanking(rankedResults);
