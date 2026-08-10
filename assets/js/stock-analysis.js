@@ -17,24 +17,7 @@ import {
     calculatePriceVsMA
 } from "./data-provider.js";
 
-import {
-    NIFTY50_STOCKS
-} from "./nifty50.js";
 
-import {
-    loadStockCSV,
-    validateHistoricalData,
-    getLatestSession,
-    getLastSessions,
-    calculateDailyChange,
-    calculateReturn,
-    calculateMovingAverage,
-    calculateRSI,
-    calculateAverageVolume,
-    calculateVolumeRatio,
-    calculateRecentHigh,
-    calculatePriceVsMA
-} from "./data-provider.js";
 
 import {
     NIFTY50_STOCKS
