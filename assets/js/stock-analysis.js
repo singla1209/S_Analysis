@@ -21,6 +21,30 @@ import {
     NIFTY50_STOCKS
 } from "./nifty50.js";
 
+import {
+    loadStockCSV,
+    validateHistoricalData,
+    getLatestSession,
+    getLastSessions,
+    calculateDailyChange,
+    calculateReturn,
+    calculateMovingAverage,
+    calculateRSI,
+    calculateAverageVolume,
+    calculateVolumeRatio,
+    calculateRecentHigh,
+    calculatePriceVsMA
+} from "./data-provider.js";
+
+import {
+    NIFTY50_STOCKS
+} from "./nifty50.js";
+
+import {
+    addFactorScores,
+    displayFactorScores
+} from "./factor-analysis.js";
+
 console.log("Stock Analysis - Part 2 loaded");
 
 
@@ -885,16 +909,25 @@ async function runNifty50Analysis() {
 
     try {
 
-        const results =
-            await analyzeAllStocks();
+       const results =
+    await analyzeAllStocks();
+
+const resultsWithFactors =
+    results.map(
+        result => addFactorScores(result)
+    );
 
 
-        // Render table
-        renderStockAnalysis(results);
+// Render table
+renderStockAnalysis(
+    resultsWithFactors
+);
 
 
-        // Update summary
-        updateSummary(results);
+// Update summary
+updateSummary(
+    resultsWithFactors
+);
 
 
         // ----------------------------------
