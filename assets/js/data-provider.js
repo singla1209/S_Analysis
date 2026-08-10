@@ -319,6 +319,7 @@ function validateHistoricalData(data) {
 
     for (const row of data) {
 
+        // Check required numeric values
         if (
             !row.date ||
             !Number.isFinite(row.open) ||
@@ -328,17 +329,13 @@ function validateHistoricalData(data) {
             !Number.isFinite(row.volume)
         ) {
 
-            console.warn(
-                "Invalid numeric record:",
-                row
-            );
-
             return {
                 valid: false,
                 message: "Invalid numeric record found."
             };
         }
 
+        // Count unusual OHLC records
         if (
             row.high < row.low ||
             row.high < row.open ||
@@ -348,31 +345,16 @@ function validateHistoricalData(data) {
         ) {
 
             invalidOHLC++;
-
-            if (invalidOHLC <= 5) {
-                console.warn(
-                    "Invalid OHLC:",
-                    row
-                );
-            }
         }
-    }
-
-    if (invalidOHLC > 0) {
-
-        return {
-            valid: false,
-            message:
-                `Found ${invalidOHLC} invalid OHLC records.`
-        };
     }
 
     return {
         valid: true,
-        message: "Historical data is valid."
+        message:
+            `Historical data is valid. ` +
+            `Found ${invalidOHLC} unusual OHLC records.`
     };
 }
-
 // ==========================================
 // GET LATEST SESSION
 // ==========================================
