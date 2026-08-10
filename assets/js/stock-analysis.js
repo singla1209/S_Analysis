@@ -924,10 +924,10 @@ updateSummary(
 
 
         const selectedResult =
-            results.find(
-                result =>
-                    result.symbol === selectedSymbol
-            );
+    resultsWithFactors.find(
+        result =>
+            result.symbol === selectedSymbol
+    );
 
 
         if (selectedResult) {
@@ -935,13 +935,18 @@ updateSummary(
             renderSelectedStock(
                 selectedResult
             );
+            displayFactorScores(selectedResult);
 
-        } else if (results.length > 0) {
+     } else if (resultsWithFactors.length > 0) {
 
-            renderSelectedStock(
-                results[0]
-            );
-        }
+    renderSelectedStock(
+        resultsWithFactors[0]
+    );
+
+    displayFactorScores(
+        resultsWithFactors[0]
+    );
+}
 
 
         console.log(
