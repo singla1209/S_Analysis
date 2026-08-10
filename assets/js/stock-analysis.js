@@ -180,6 +180,34 @@ async function analyzeStock(symbol) {
     }
 }
 
+
+async function analyzeAllStocks() {
+
+    console.log("================================");
+    console.log("STARTING NIFTY 50 ANALYSIS");
+    console.log("================================");
+
+    const results = [];
+
+    for (const symbol of NIFTY50_STOCKS) {
+
+        console.log(`Analyzing ${symbol}...`);
+
+        const result =
+            await analyzeStock(symbol);
+
+        results.push(result);
+    }
+
+    console.log("================================");
+    console.log("NIFTY 50 ANALYSIS COMPLETE");
+    console.log("================================");
+
+    console.table(results);
+
+    return results;
+}
+
 async function testDataLayer() {
 
       console.log("Starting historical data test...");
@@ -395,11 +423,20 @@ async function testAnalyzeStock() {
     console.table(result);
 }
 
-testAnalyzeStock()
-    .then(() => {
-        console.log("TCS ANALYSIS TEST FINISHED");
+analyzeAllStocks()
+    .then(results => {
+
+        console.log(
+            "Total stocks analyzed:",
+            results.length
+        );
+
     })
     .catch(error => {
-        console.error("TCS ANALYSIS TEST ERROR:", error);
-    });
 
+        console.error(
+            "NIFTY 50 ANALYSIS ERROR:",
+            error
+        );
+
+    });
