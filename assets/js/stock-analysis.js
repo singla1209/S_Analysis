@@ -644,17 +644,17 @@ function renderFactorRanking(rankedResults) {
             <td>${index + 1}</td>
             <td><strong>${stock.symbol}</strong></td>
 
-            <td>${Number(stock.trendScore ?? 0).toFixed(1)}</td>
-            <td>${Number(stock.volumeScore ?? 0).toFixed(1)}</td>
-            <td>${Number(stock.supportScore ?? 0).toFixed(1)}</td>
-            <td>${Number(stock.technicalScore ?? 0).toFixed(1)}</td>
+            <td>${Number(stock.factorTrend ?? 0).toFixed(1)}</td>
+            <td>${Number(stock.factorVolume ?? 0).toFixed(1)}</td>
+            <td>${Number(stock.factorSupport ?? 0).toFixed(1)}</td>
+            <td>${Number(stock.factorTechnical ?? 0).toFixed(1)}</td>
 
-            <td>${Number(stock.candleScore ?? 0).toFixed(1)}</td>
-            <td>${Number(stock.niftyScore ?? 0).toFixed(1)}</td>
-            <td>${Number(stock.sectorScore ?? 0).toFixed(1)}</td>
-            <td>${Number(stock.newsScore ?? 0).toFixed(1)}</td>
-            <td>${Number(stock.fnoScore ?? 0).toFixed(1)}</td>
-            <td>${Number(stock.sentimentScore ?? 0).toFixed(1)}</td>
+            <td>${Number(stock.factorCandle ?? 0).toFixed(1)}</td>
+            <td>${Number(stock.factorNifty ?? 0).toFixed(1)}</td>
+            <td>${Number(stock.factorSector ?? 0).toFixed(1)}</td>
+            <td>${Number(stock.factorNews ?? 0).toFixed(1)}</td>
+            <td>${Number(stock.factorFno ?? 0).toFixed(1)}</td>
+            <td>${Number(stock.factorSentiment ?? 0).toFixed(1)}</td>
 
             <td><strong>${Number(stock.finalFactorScore ?? 0).toFixed(1)}</strong></td>
         </tr>
