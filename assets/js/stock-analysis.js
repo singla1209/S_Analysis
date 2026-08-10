@@ -394,59 +394,417 @@ console.log(
 // RUN ANALYSIS BUTTON
 // ==========================================
 
+// ==========================================
+// NIFTY 50 MAIN PAGE ANALYSIS
+// ==========================================
+
 const runAnalysisBtn =
     document.getElementById("runAnalysisBtn");
 
-if (runAnalysisBtn) {
+const stockAnalysisBody =
+    document.getElementById("stockAnalysisBody");
 
-   runAnalysisBtn.addEventListener(
-    "click",
-    async () => {
+const stocksAnalysed =
+    document.getElementById("stocksAnalysed");
 
-        console.log(
-            "===== RUNNING FULL NIFTY 50 ANALYSIS ====="
+
+// ------------------------------------------
+// Format number
+// ------------------------------------------
+
+function formatNumber(value, decimals = 2) {
+
+    if (!Number.isFinite(value)) {
+        return "--";
+    }
+
+    return Number(value).toFixed(decimals);
+}
+
+
+// ------------------------------------------
+// Format percentage
+// ------------------------------------------
+
+function formatPercent(value) {
+
+    if (!Number.isFinite(value)) {
+        return "--";
+    }
+
+    return `${value >= 0 ? "+" : ""}${value.toFixed(2)}%`;
+}
+
+
+// ------------------------------------------
+// Percentage class
+// ------------------------------------------
+
+function percentageClass(value) {
+
+    if (!Number.isFinite(value)) {
+        return "";
+    }
+
+    if (value > 0) {
+        return "text-success fw-semibold";
+    }
+
+    if (value < 0) {
+        return "text-danger fw-semibold";
+    }
+
+    return "";
+}
+
+
+// ------------------------------------------
+// RSI class
+// ------------------------------------------
+
+function rsiClass(value) {
+
+    if (!Number.isFinite(value)) {
+        return "";
+    }
+
+    if (value >= 70) {
+        return "text-danger fw-bold";
+    }
+
+    if (value <= 30) {
+        return "text-success fw-bold";
+    }
+
+    return "";
+}
+
+
+// ------------------------------------------
+// Render results
+// ------------------------------------------
+
+function renderStockAnalysis(results) {
+
+    if (!stockAnalysisBody) {
+        return;
+    }
+
+    stockAnalysisBody.innerHTML = "";
+
+
+    if (!results || results.length === 0) {
+
+        stockAnalysisBody.innerHTML = `
+
+            <tr>
+
+                <td
+                    colspan="13"
+                    class="text-center text-muted py-4">
+
+                    No analysis results available.
+
+                </td>
+
+            </tr>
+
+        `;
+
+        return;
+    }
+
+
+    results.forEach((result, index) => {
+
+        if (!result.valid) {
+
+            const row =
+                document.createElement("tr");
+
+            row.innerHTML = `
+
+                <td>${index + 1}</td>
+
+                <td class="fw-semibold">
+                    ${result.symbol}
+                </td>
+
+                <td colspan="11"
+                    class="text-danger">
+
+                    Analysis failed:
+                    ${result.message || "Unknown error"}
+
+                </td>
+
+            `;
+
+            stockAnalysisBody.appendChild(row);
+
+            return;
+        }
+
+
+        const row =
+            document.createElement("tr");
+
+
+        row.innerHTML = `
+
+            <td class="text-muted">
+                ${index + 1}
+            </td>
+
+
+            <td>
+                <strong>
+                    ${result.symbol}
+                </strong>
+            </td>
+
+
+            <td>
+                ${result.date}
+            </td>
+
+
+            <td>
+                ₹${formatNumber(result.price)}
+            </td>
+
+
+            <td class="${percentageClass(result.dailyChange)}">
+                ${formatPercent(result.dailyChange)}
+            </td>
+
+
+            <td class="${percentageClass(result.return5)}">
+                ${formatPercent(result.return5)}
+            </td>
+
+
+            <td class="${percentageClass(result.return20)}">
+                ${formatPercent(result.return20)}
+            </td>
+
+
+            <td>
+                ${formatNumber(result.ma20)}
+            </td>
+
+
+            <td>
+                ${formatNumber(result.ma50)}
+            </td>
+
+
+            <td class="${rsiClass(result.rsi)}">
+                ${formatNumber(result.rsi)}
+            </td>
+
+
+            <td>
+                ${formatNumber(result.volumeRatio, 2)}x
+            </td>
+
+
+            <td class="${percentageClass(result.priceVsMA20)}">
+                ${formatPercent(result.priceVsMA20)}
+            </td>
+
+
+            <td class="${percentageClass(result.priceVsMA50)}">
+                ${formatPercent(result.priceVsMA50)}
+            </td>
+
+        `;
+
+
+        stockAnalysisBody.appendChild(row);
+
+    });
+
+
+    if (stocksAnalysed) {
+
+        const successful =
+            results.filter(
+                result => result.valid
+            ).length;
+
+        stocksAnalysed.textContent =
+            successful;
+
+    }
+
+}
+
+
+// ------------------------------------------
+// Run all NIFTY 50 analysis
+// ------------------------------------------
+
+async function runNifty50Analysis() {
+
+    if (!stockAnalysisBody) {
+        console.error(
+            "stockAnalysisBody not found."
         );
 
-        try {
+        return;
+    }
 
-            const results = [];
 
-            for (const symbol of NIFTY50_STOCKS) {
+    if (runAnalysisBtn) {
 
-                console.log(
-                    `Analyzing ${symbol}...`
-                );
+        runAnalysisBtn.disabled = true;
+
+        runAnalysisBtn.innerHTML = `
+
+            <span
+                class="spinner-border spinner-border-sm me-1">
+            </span>
+
+            Analyzing...
+
+        `;
+
+    }
+
+
+    stockAnalysisBody.innerHTML = `
+
+        <tr>
+
+            <td
+                colspan="13"
+                class="text-center py-4">
+
+                <div
+                    class="spinner-border text-primary mb-2">
+                </div>
+
+                <div>
+                    Loading NIFTY 50 analysis...
+                </div>
+
+            </td>
+
+        </tr>
+
+    `;
+
+
+    try {
+
+        const results = [];
+
+
+        for (const symbol of NIFTY50_STOCKS) {
+
+            try {
 
                 const result =
                     await analyzeStock(symbol);
 
                 results.push(result);
+
+            } catch (error) {
+
+                console.error(
+                    `Failed to analyze ${symbol}:`,
+                    error
+                );
+
+                results.push({
+
+                    symbol,
+
+                    valid: false,
+
+                    message: error.message
+
+                });
+
             }
 
-            console.log(
-                "===== NIFTY 50 ANALYSIS COMPLETE ====="
-            );
+        }
 
-            console.log(
-                "Total stocks analyzed:",
-                results.length
-            );
 
-            console.table(results);
+        renderStockAnalysis(results);
 
-        } catch (error) {
 
-            console.error(
-                "NIFTY 50 analysis failed:",
-                error
-            );
+        console.log(
+            "===== NIFTY 50 ANALYSIS COMPLETE ====="
+        );
+
+        console.log(
+            "Total stocks analyzed:",
+            results.length
+        );
+
+
+        console.table(results);
+
+
+    } catch (error) {
+
+        console.error(
+            "NIFTY 50 analysis failed:",
+            error
+        );
+
+
+        stockAnalysisBody.innerHTML = `
+
+            <tr>
+
+                <td
+                    colspan="13"
+                    class="text-center text-danger py-4">
+
+                    Unable to load stock analysis.
+
+                </td>
+
+            </tr>
+
+        `;
+
+    } finally {
+
+        if (runAnalysisBtn) {
+
+            runAnalysisBtn.disabled = false;
+
+            runAnalysisBtn.innerHTML = `
+
+                <i class="bi bi-bar-chart-line me-1"></i>
+
+                Run Analysis
+
+            `;
 
         }
 
     }
-);
+
 }
 
+
+// ------------------------------------------
+// Button
+// ------------------------------------------
+
+if (runAnalysisBtn) {
+
+    runAnalysisBtn.addEventListener(
+        "click",
+        runNifty50Analysis
+    );
+
+}
 //checkAllStockData();
 
 
@@ -454,49 +812,8 @@ if (runAnalysisBtn) {
 // TEST ALL NIFTY 50 STOCKS
 // ==========================================
 
-async function testAnalyzeAllStocks() {
 
-    console.log("======================================");
-    console.log("RUNNING NIFTY 50 ANALYSIS");
-    console.log("Total stocks:", NIFTY50_STOCKS.length);
-    console.log("======================================");
 
-    const results = [];
-
-    for (const symbol of NIFTY50_STOCKS) {
-
-        const result =
-            await analyzeStock(symbol);
-
-        results.push(result);
-
-        console.log(
-            `${symbol}:`,
-            result.valid ? "OK" : "FAILED"
-        );
-    }
-
-    console.log("======================================");
-    console.log("NIFTY 50 ANALYSIS COMPLETE");
-    console.log("======================================");
-
-    console.table(results);
-
-    return results;
-}
-
-testAnalyzeAllStocks()
-    .then(() => {
-        console.log(
-            "ALL STOCK ANALYSIS TEST FINISHED"
-        );
-    })
-    .catch(error => {
-        console.error(
-            "ALL STOCK ANALYSIS TEST ERROR:",
-            error
-        );
-    });
 
 analyzeAllStocks()
     .then(results => {
