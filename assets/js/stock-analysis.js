@@ -390,22 +390,42 @@ console.log(
 // RUN ANALYSIS BUTTON
 // ==========================================
 
+// ==========================================
+// RUN ANALYSIS BUTTON
+// ==========================================
+
 const runAnalysisBtn =
     document.getElementById("runAnalysisBtn");
-
 
 if (runAnalysisBtn) {
 
     runAnalysisBtn.addEventListener(
         "click",
-        () => {
+        async () => {
 
             console.log(
-                "===== RUNNING ANALYZE STOCK TEST ====="
+                "===== RUNNING NIFTY 50 ANALYSIS ====="
             );
 
-            testAnalyzeStock();
+            try {
 
+                const results =
+                    await testAnalyzeAllStocks();
+
+                console.log(
+                    "===== ANALYSIS COMPLETE ====="
+                );
+
+                console.table(results);
+
+            } catch (error) {
+
+                console.error(
+                    "NIFTY 50 ANALYSIS ERROR:",
+                    error
+                );
+
+            }
         }
     );
 }
