@@ -188,3 +188,25 @@ if (runAnalysisBtn) {
 }
 
 checkAllStockData();
+async function testCipla() {
+
+    const cipla =
+        await loadStockCSV("CIPLA");
+
+    const check =
+        validateHistoricalData(cipla);
+
+    console.log("CIPLA VALIDATION:", check);
+
+    console.log(
+        "CIPLA FIRST RECORD:",
+        cipla[0]
+    );
+
+    console.log(
+        "CIPLA LAST RECORD:",
+        cipla[cipla.length - 1]
+    );
+}
+
+testCipla();
