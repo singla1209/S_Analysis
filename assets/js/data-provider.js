@@ -3,6 +3,9 @@
 // Reads real Yahoo Finance CSV data
 // ==========================================
 
+import {
+    NIFTY50_STOCKS
+} from "./nifty50.js";
 console.log("Data Provider - Part 3 loaded");
 
 
@@ -10,10 +13,14 @@ console.log("Data Provider - Part 3 loaded");
 // CSV FILE PATHS
 // ==========================================
 
-const STOCK_FILES = {
-    TCS: "data/TCS.NS.csv"
-};
+const STOCK_FILES = {};
 
+NIFTY50_STOCKS.forEach(symbol => {
+
+    STOCK_FILES[symbol] =
+        `data/${symbol}.NS.csv`;
+
+});
 
 // ==========================================
 // LOAD CSV FILE
