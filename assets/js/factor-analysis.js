@@ -663,6 +663,85 @@ function displayFactorScores(result) {
 }
 
 // ==========================================
+// FINAL 10-FACTOR SCORE
+// ==========================================
+
+function calculateFinalFactorScore(result) {
+
+    if (!result) {
+        return 5;
+    }
+
+    const factors = [
+        result.factorTrend,
+        result.factorVolume,
+        result.factorSupport,
+        result.factorTechnical,
+        result.factorCandle,
+        result.factorNifty,
+        result.factorSector,
+        result.factorNews,
+        result.factorFno,
+        result.factorSentiment
+    ];
+
+    const validFactors = factors.filter(
+        value => Number.isFinite(value)
+    );
+
+    if (validFactors.length === 0) {
+        return 5;
+    }
+
+    const total =
+        validFactors.reduce(
+            (sum, value) => sum + value,
+            0
+        );
+
+    return Number(
+        (total / validFactors.length).toFixed(2)
+    );
+}
+
+
+// ==========================================
+// ADD FINAL SCORE TO STOCK RESULT
+// ==========================================
+
+function addFinalFactorScore(result) {
+
+    return {
+        ...result,
+        finalFactorScore:
+            calculateFinalFactorScore(result)
+    };
+}
+
+
+// ==========================================
+// RANK ALL STOCKS
+// ==========================================
+
+function rankStocksByFactorScore(results) {
+
+    if (!Array.isArray(results)) {
+        return [];
+    }
+
+    return results
+        .filter(result => result.valid)
+        .map(result =>
+            addFinalFactorScore(result)
+        )
+        .sort(
+            (a, b) =>
+                b.finalFactorScore -
+                a.finalFactorScore
+        );
+}
+
+// ==========================================
 // EXPORT FUNCTIONS
 // ==========================================
 
