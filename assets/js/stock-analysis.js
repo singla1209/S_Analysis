@@ -13,7 +13,8 @@ import {
     percentageChange,
     checkAllStockData,
     calculateReturn,
-    calculateMovingAverage
+    calculateMovingAverage,
+    calculateRSI
 } from "./data-provider.js";
 
 import {
@@ -185,6 +186,14 @@ console.log(
 console.log(
     "MA50:",
     ma50?.toFixed(2)
+);
+
+const rsi =
+    calculateRSI(data, 14);
+
+console.log(
+    "RSI (14):",
+    rsi?.toFixed(2)
 );
 
     const stocksAnalysed =
