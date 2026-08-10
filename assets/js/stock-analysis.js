@@ -904,6 +904,14 @@ const resultsWithFactors =
 const rankedResults =
     rankStocksByFactorScore(resultsWithFactors);
 
+        console.table(
+    rankedResults.map((stock, index) => ({
+        rank: index + 1,
+        symbol: stock.symbol,
+        finalScore: stock.finalFactorScore
+    }))
+);
+
 
 // Render table
 renderStockAnalysis(
