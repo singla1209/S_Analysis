@@ -154,6 +154,38 @@ const data = await loadStockCSV("TCS");
 
     // Show basic result on page
 
+    const return5 =
+    calculateReturn(data, 5);
+
+const return20 =
+    calculateReturn(data, 20);
+
+const ma20 =
+    calculateMovingAverage(data, 20);
+
+const ma50 =
+    calculateMovingAverage(data, 50);
+
+console.log(
+    "5-day return:",
+    return5?.toFixed(2) + "%"
+);
+
+console.log(
+    "20-day return:",
+    return20?.toFixed(2) + "%"
+);
+
+console.log(
+    "MA20:",
+    ma20?.toFixed(2)
+);
+
+console.log(
+    "MA50:",
+    ma50?.toFixed(2)
+);
+
     const stocksAnalysed =
         document.getElementById("stocksAnalysed");
 
