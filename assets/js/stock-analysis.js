@@ -399,35 +399,52 @@ const runAnalysisBtn =
 
 if (runAnalysisBtn) {
 
-    runAnalysisBtn.addEventListener(
-        "click",
-        async () => {
+   runAnalysisBtn.addEventListener(
+    "click",
+    async () => {
 
-            console.log(
-                "===== RUNNING NIFTY 50 ANALYSIS ====="
-            );
+        console.log(
+            "===== RUNNING FULL NIFTY 50 ANALYSIS ====="
+        );
 
-            try {
+        try {
 
-                const results =
-                    await testAnalyzeAllStocks();
+            const results = [];
+
+            for (const symbol of NIFTY50_STOCKS) {
 
                 console.log(
-                    "===== ANALYSIS COMPLETE ====="
+                    `Analyzing ${symbol}...`
                 );
 
-                console.table(results);
+                const result =
+                    await analyzeStock(symbol);
 
-            } catch (error) {
-
-                console.error(
-                    "NIFTY 50 ANALYSIS ERROR:",
-                    error
-                );
-
+                results.push(result);
             }
+
+            console.log(
+                "===== NIFTY 50 ANALYSIS COMPLETE ====="
+            );
+
+            console.log(
+                "Total stocks analyzed:",
+                results.length
+            );
+
+            console.table(results);
+
+        } catch (error) {
+
+            console.error(
+                "NIFTY 50 analysis failed:",
+                error
+            );
+
         }
-    );
+
+    }
+);
 }
 
 //checkAllStockData();
