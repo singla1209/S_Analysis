@@ -421,6 +421,47 @@ function percentageChange(oldValue, newValue) {
     );
 }
 
+
+function calculateReturn(data, days) {
+
+    if (!Array.isArray(data) || data.length <= days) {
+        return null;
+    }
+
+    const latest = data[data.length - 1];
+    const previous = data[data.length - 1 - days];
+
+    if (
+        !Number.isFinite(latest.close) ||
+        !Number.isFinite(previous.close) ||
+        previous.close === 0
+    ) {
+        return null;
+    }
+
+    return (
+        (latest.close - previous.close) /
+        previous.close
+    ) * 100;
+}
+
+
+function calculateMovingAverage(data, days) {
+
+    if (!Array.isArray(data) || data.length < days) {
+        return null;
+    }
+
+    const recent = data.slice(-days);
+
+    const sum = recent.reduce(
+        (total, row) => total + row.close,
+        0
+    );
+
+    return sum / days;
+}
+
 // ==========================================
 // EXPORT FUNCTIONS
 // ==========================================
@@ -429,9 +470,10 @@ export {
     loadStockCSV,
     validateHistoricalData,
     getLatestSession,
-    getLatestTradingDay,
     getLastSessions,
     calculateDailyChange,
     percentageChange,
-    checkAllStockData
+    checkAllStockData,
+    calculateReturn,
+    calculateMovingAverage
 };
