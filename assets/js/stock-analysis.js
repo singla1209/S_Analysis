@@ -939,7 +939,7 @@ const resultsWithFactors =
 const rankedResults =
     rankStocksByFactorScore(resultsWithFactors);
 
-    console.log("ONE RANKED STOCK:", rankedResults[0]); 
+ console.log("ONE RANKED STOCK FULL:", JSON.stringify(rankedResults[0], null, 2));
 
 renderFactorRanking(rankedResults);
 
