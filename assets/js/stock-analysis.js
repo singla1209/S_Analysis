@@ -632,33 +632,73 @@ function renderStockAnalysis(results) {
 
 
 function renderFactorRanking(rankedResults) {
-    const tableBody = document.getElementById("factorRankingBody");
+
+    const tableBody = document.getElementById("topStocksBody");
 
     if (!tableBody) {
-        console.error("factorRankingBody not found");
+        console.error("topStocksBody not found");
         return;
     }
 
-    tableBody.innerHTML = rankedResults.map((stock, index) => `
-        <tr>
-            <td>${index + 1}</td>
-            <td><strong>${stock.symbol}</strong></td>
+    const top10 = rankedResults.slice(0, 10);
 
-            <td>${Number(stock.factorTrend ?? 0).toFixed(1)}</td>
-            <td>${Number(stock.factorVolume ?? 0).toFixed(1)}</td>
-            <td>${Number(stock.factorSupport ?? 0).toFixed(1)}</td>
-            <td>${Number(stock.factorTechnical ?? 0).toFixed(1)}</td>
+    tableBody.innerHTML = top10.map((stock, index) => {
 
-            <td>${Number(stock.factorCandle ?? 0).toFixed(1)}</td>
-            <td>${Number(stock.factorNifty ?? 0).toFixed(1)}</td>
-            <td>${Number(stock.factorSector ?? 0).toFixed(1)}</td>
-            <td>${Number(stock.factorNews ?? 0).toFixed(1)}</td>
-            <td>${Number(stock.factorFno ?? 0).toFixed(1)}</td>
-            <td>${Number(stock.factorSentiment ?? 0).toFixed(1)}</td>
+        const score = Number(stock.finalFactorScore ?? 0);
 
-            <td><strong>${Number(stock.finalFactorScore ?? 0).toFixed(1)}</strong></td>
-        </tr>
-    `).join("");
+        let direction = "Neutral";
+
+        if (score >= 7) {
+            direction = "Bullish";
+        } else if (score <= 4) {
+            direction = "Bearish";
+        }
+
+        let confidence = "Low";
+
+        if (score >= 8) {
+            confidence = "High";
+        } else if (score >= 6) {
+            confidence = "Medium";
+        }
+
+        return `
+            <tr>
+                <td>
+                    <strong>${index + 1}</strong>
+                </td>
+
+                <td>
+                    <strong>${stock.symbol}</strong>
+                </td>
+
+                <td>
+                    ₹${Number(stock.price ?? 0).toFixed(2)}
+                </td>
+
+                <td>
+                    <strong>${score.toFixed(1)}</strong>
+                </td>
+
+                <td>
+                    ${direction}
+                </td>
+
+                <td>
+                    ${confidence}
+                </td>
+
+                <td>
+                    <button
+                        class="btn btn-sm btn-outline-primary"
+                        onclick="showStockDetails('${stock.symbol}')">
+                        View
+                    </button>
+                </td>
+            </tr>
+        `;
+
+    }).join("");
 }
 // ==========================================
 // UPDATE INDIVIDUAL STOCK CARDS
