@@ -315,6 +315,8 @@ function validateHistoricalData(data) {
         };
     }
 
+    let invalidOHLC = 0;
+
     for (const row of data) {
 
         if (
@@ -326,9 +328,14 @@ function validateHistoricalData(data) {
             !Number.isFinite(row.volume)
         ) {
 
+            console.warn(
+                "Invalid numeric record:",
+                row
+            );
+
             return {
                 valid: false,
-                message: "Invalid record found."
+                message: "Invalid numeric record found."
             };
         }
 
@@ -340,11 +347,24 @@ function validateHistoricalData(data) {
             row.low > row.close
         ) {
 
-            return {
-                valid: false,
-                message: `Invalid OHLC values on ${row.date}.`
-            };
+            invalidOHLC++;
+
+            if (invalidOHLC <= 5) {
+                console.warn(
+                    "Invalid OHLC:",
+                    row
+                );
+            }
         }
+    }
+
+    if (invalidOHLC > 0) {
+
+        return {
+            valid: false,
+            message:
+                `Found ${invalidOHLC} invalid OHLC records.`
+        };
     }
 
     return {
@@ -352,7 +372,6 @@ function validateHistoricalData(data) {
         message: "Historical data is valid."
     };
 }
-
 
 // ==========================================
 // GET LATEST SESSION
