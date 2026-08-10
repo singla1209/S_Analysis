@@ -312,7 +312,219 @@ function calculateTechnicalScore(result) {
 
 
 // ==========================================
-// CALCULATE ALL FOUR FACTORS
+// FACTOR 5
+// CANDLESTICK PATTERN
+// ==========================================
+
+function calculateCandleScore(result) {
+
+    /*
+     * Current stock result contains dailyChange,
+     * but does not yet contain Open / High / Low.
+     *
+     * Therefore we use the available short-term price
+     * behaviour as a temporary candle-strength proxy.
+     *
+     * Later we can replace this with actual:
+     * Open, High, Low, Close candle analysis.
+     */
+
+    const daily = result.dailyChange;
+    const return5 = result.return5;
+
+    if (
+        !Number.isFinite(daily) ||
+        !Number.isFinite(return5)
+    ) {
+        return 5;
+    }
+
+    let score = 5;
+
+    // Strong positive recent candle behaviour
+    if (daily >= 2) {
+        score += 2;
+    } else if (daily >= 1) {
+        score += 1;
+    } else if (daily > 0) {
+        score += 0.5;
+    }
+
+    // Weak / bearish recent behaviour
+    else if (daily <= -2) {
+        score -= 2;
+    } else if (daily <= -1) {
+        score -= 1;
+    } else if (daily < 0) {
+        score -= 0.5;
+    }
+
+    // Confirm with 5-day return
+    if (return5 >= 3) {
+        score += 1;
+    } else if (return5 >= 1) {
+        score += 0.5;
+    } else if (return5 <= -3) {
+        score -= 1;
+    } else if (return5 <= -1) {
+        score -= 0.5;
+    }
+
+    return Math.round(clampScore(score));
+}
+
+
+// ==========================================
+// FACTOR 6
+// NIFTY TREND
+// ==========================================
+
+function calculateNiftyScore(result) {
+
+    /*
+     * NIFTY-specific data is not yet being supplied
+     * by stock-analysis.js.
+     *
+     * Therefore keep this factor neutral instead of
+     * inventing a NIFTY value.
+     */
+
+    if (Number.isFinite(result.niftyScore)) {
+        return Math.round(
+            clampScore(result.niftyScore)
+        );
+    }
+
+    return 5;
+}
+
+
+// ==========================================
+// FACTOR 7
+// SECTOR STRENGTH
+// ==========================================
+
+function calculateSectorScore(result) {
+
+    /*
+     * Sector comparison requires sector data for all
+     * stocks. That data is not currently present in
+     * the result object.
+     *
+     * If sectorScore is supplied later, use it.
+     * Otherwise remain neutral.
+     */
+
+    if (Number.isFinite(result.sectorScore)) {
+        return Math.round(
+            clampScore(result.sectorScore)
+        );
+    }
+
+    return 5;
+}
+
+
+// ==========================================
+// FACTOR 8
+// NEWS
+// ==========================================
+
+function calculateNewsScore(result) {
+
+    /*
+     * News data is not currently connected to the
+     * stock analysis system.
+     *
+     * Do NOT randomly score news.
+     *
+     * Neutral = 5 until a real news source is connected.
+     */
+
+    if (Number.isFinite(result.newsScore)) {
+        return Math.round(
+            clampScore(result.newsScore)
+        );
+    }
+
+    return 5;
+}
+
+
+// ==========================================
+// FACTOR 9
+// F&O / OPEN INTEREST
+// ==========================================
+
+function calculateFnoScore(result) {
+
+    /*
+     * F&O / Open Interest data is not currently
+     * available in the stock result.
+     *
+     * Keep neutral until real OI data is connected.
+     */
+
+    if (Number.isFinite(result.fnoScore)) {
+        return Math.round(
+            clampScore(result.fnoScore)
+        );
+    }
+
+    return 5;
+}
+
+
+// ==========================================
+// FACTOR 10
+// MARKET SENTIMENT
+// ==========================================
+
+function calculateSentimentScore(result) {
+
+    /*
+     * Until real market-sentiment data is connected,
+     * derive a basic sentiment score from the stock's
+     * existing technical behaviour.
+     */
+
+    let score = 5;
+
+    if (Number.isFinite(result.return5)) {
+
+        if (result.return5 >= 3) {
+            score += 1.5;
+        } else if (result.return5 >= 1) {
+            score += 1;
+        } else if (result.return5 > 0) {
+            score += 0.5;
+        } else if (result.return5 <= -3) {
+            score -= 1.5;
+        } else if (result.return5 <= -1) {
+            score -= 1;
+        } else {
+            score -= 0.5;
+        }
+    }
+
+    if (Number.isFinite(result.return20)) {
+
+        if (result.return20 >= 8) {
+            score += 1;
+        } else if (result.return20 >= 3) {
+            score += 0.5;
+        } else if (result.return20 <= -8) {
+            score -= 1;
+        } else if (result.return20 <= -3) {
+            score -= 0.5;
+        }
+    }
+
+    return Math.round(clampScore(score));
+}
+
+// ==========================================
+// CALCULATE ALL 10 FACTORS
 // ==========================================
 
 function calculateFactors(result) {
@@ -323,13 +535,21 @@ function calculateFactors(result) {
             factorTrend: 5,
             factorVolume: 5,
             factorSupport: 5,
-            factorTechnical: 5
+            factorTechnical: 5,
+
+            factorCandle: 5,
+            factorNifty: 5,
+            factorSector: 5,
+            factorNews: 5,
+            factorFno: 5,
+            factorSentiment: 5
         };
     }
 
 
     return {
 
+        // Factors 1-4
         factorTrend:
             calculateTrendScore(result),
 
@@ -340,7 +560,27 @@ function calculateFactors(result) {
             calculateSupportScore(result),
 
         factorTechnical:
-            calculateTechnicalScore(result)
+            calculateTechnicalScore(result),
+
+
+        // Factors 5-10
+        factorCandle:
+            calculateCandleScore(result),
+
+        factorNifty:
+            calculateNiftyScore(result),
+
+        factorSector:
+            calculateSectorScore(result),
+
+        factorNews:
+            calculateNewsScore(result),
+
+        factorFno:
+            calculateFnoScore(result),
+
+        factorSentiment:
+            calculateSentimentScore(result)
 
     };
 }
@@ -366,7 +606,7 @@ function addFactorScores(result) {
 
 
 // ==========================================
-// DASHBOARD DISPLAY
+// DASHBOARD DISPLAY - ALL 10 FACTORS
 // ==========================================
 
 function displayFactorScores(result) {
@@ -376,48 +616,51 @@ function displayFactorScores(result) {
     }
 
 
-    const factorTrend =
-        document.getElementById("factorTrend");
+    const factorElements = {
 
-    const factorVolume =
-        document.getElementById("factorVolume");
+        factorTrend:
+            document.getElementById("factorTrend"),
 
-    const factorSupport =
-        document.getElementById("factorSupport");
+        factorVolume:
+            document.getElementById("factorVolume"),
 
-    const factorTechnical =
-        document.getElementById("factorTechnical");
+        factorSupport:
+            document.getElementById("factorSupport"),
+
+        factorTechnical:
+            document.getElementById("factorTechnical"),
+
+        factorCandle:
+            document.getElementById("factorCandle"),
+
+        factorNifty:
+            document.getElementById("factorNifty"),
+
+        factorSector:
+            document.getElementById("factorSector"),
+
+        factorNews:
+            document.getElementById("factorNews"),
+
+        factorFno:
+            document.getElementById("factorFno"),
+
+        factorSentiment:
+            document.getElementById("factorSentiment")
+    };
 
 
-    if (factorTrend) {
+    Object.entries(factorElements).forEach(
+        ([key, element]) => {
 
-        factorTrend.textContent =
-            `${result.factorTrend ?? "--"} / 10`;
-    }
+            if (element) {
 
-
-    if (factorVolume) {
-
-        factorVolume.textContent =
-            `${result.factorVolume ?? "--"} / 10`;
-    }
-
-
-    if (factorSupport) {
-
-        factorSupport.textContent =
-            `${result.factorSupport ?? "--"} / 10`;
-    }
-
-
-    if (factorTechnical) {
-
-        factorTechnical.textContent =
-            `${result.factorTechnical ?? "--"} / 10`;
-    }
-
+                element.textContent =
+                    `${result[key] ?? "--"} / 10`;
+            }
+        }
+    );
 }
-
 
 // ==========================================
 // EXPORT FUNCTIONS
@@ -425,10 +668,21 @@ function displayFactorScores(result) {
 
 export {
 
+    // Factors 1-4
     calculateTrendScore,
     calculateVolumeScore,
     calculateSupportScore,
     calculateTechnicalScore,
+
+    // Factors 5-10
+    calculateCandleScore,
+    calculateNiftyScore,
+    calculateSectorScore,
+    calculateNewsScore,
+    calculateFnoScore,
+    calculateSentimentScore,
+
+    // Combined
     calculateFactors,
     addFactorScores,
     displayFactorScores
