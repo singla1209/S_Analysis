@@ -11,7 +11,8 @@ import {
     getLatestTradingDay,
     getLastSessions,
     calculateDailyChange,
-    percentageChange
+    percentageChange,
+    checkAllStockData
 } from "./data-provider.js";
 
 import {
@@ -186,3 +187,4 @@ if (runAnalysisBtn) {
     );
 }
 
+checkAllStockData();
