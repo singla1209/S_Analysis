@@ -8,7 +8,6 @@ import {
     loadStockCSV,
     validateHistoricalData,
     getLatestSession,
-    getLatestTradingDay,
     getLastSessions,
     calculateDailyChange,
     percentageChange,
