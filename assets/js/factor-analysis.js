@@ -764,6 +764,11 @@ export {
     // Combined
     calculateFactors,
     addFactorScores,
-    displayFactorScores
+    displayFactorScores,
+
+    // Final scoring & ranking
+    calculateFinalFactorScore,
+    addFinalFactorScore,
+    rankStocksByFactorScore
 
 };
