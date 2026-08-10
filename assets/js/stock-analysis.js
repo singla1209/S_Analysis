@@ -25,7 +25,8 @@ import {
 
 import {
     addFactorScores,
-    displayFactorScores
+    displayFactorScores,
+    rankStocksByFactorScore
 } from "./factor-analysis.js";
 
 console.log("Stock Analysis - Part 2 loaded");
@@ -899,6 +900,9 @@ const resultsWithFactors =
     results.map(
         result => addFactorScores(result)
     );
+
+const rankedResults =
+    rankStocksByFactorScore(resultsWithFactors);
 
 
 // Render table
