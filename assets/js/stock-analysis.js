@@ -12,7 +12,9 @@ import {
     getLastSessions,
     calculateDailyChange,
     percentageChange,
-    checkAllStockData
+    checkAllStockData,
+    calculateReturn,
+    calculateMovingAverage
 } from "./data-provider.js";
 
 import {
