@@ -49,6 +49,103 @@ async function loadStockCSV(symbol) {
     return parseCSV(csvText);
 }
 
+// ==========================================
+// CHECK ALL NIFTY 50 CSV FILES
+// ==========================================
+
+async function checkAllStockData() {
+
+    const results = [];
+
+    console.log("Checking NIFTY 50 CSV files...");
+
+    for (const symbol of NIFTY50_STOCKS) {
+
+        try {
+
+            const data =
+                await loadStockCSV(symbol);
+
+            const validation =
+                validateHistoricalData(data);
+
+            if (validation.valid) {
+
+                results.push({
+                    symbol: symbol,
+                    status: "OK",
+                    records: data.length
+                });
+
+                console.log(
+                    `✅ ${symbol}: ${data.length} records`
+                );
+
+            } else {
+
+                results.push({
+                    symbol: symbol,
+                    status: "INVALID",
+                    records: data.length
+                });
+
+                console.warn(
+                    `⚠️ ${symbol}: invalid data`
+                );
+            }
+
+        } catch (error) {
+
+            results.push({
+                symbol: symbol,
+                status: "MISSING",
+                records: 0
+            });
+
+            console.warn(
+                `❌ ${symbol}: CSV missing`
+            );
+        }
+    }
+
+    const successful =
+        results.filter(
+            item => item.status === "OK"
+        ).length;
+
+    const missing =
+        results.filter(
+            item => item.status === "MISSING"
+        ).length;
+
+    const invalid =
+        results.filter(
+            item => item.status === "INVALID"
+        ).length;
+
+    console.log("================================");
+    console.log("NIFTY 50 DATA CHECK COMPLETE");
+    console.log("================================");
+
+    console.log(
+        "Successful:",
+        successful
+    );
+
+    console.log(
+        "Missing:",
+        missing
+    );
+
+    console.log(
+        "Invalid:",
+        invalid
+    );
+
+    console.table(results);
+
+    return results;
+}
 
 // ==========================================
 // CSV PARSER
