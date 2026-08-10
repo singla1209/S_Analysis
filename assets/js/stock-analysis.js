@@ -373,15 +373,14 @@ if (runAnalysisBtn) {
         () => {
 
             console.log(
-                "Starting historical data test..."
+                "===== RUNNING ANALYZE STOCK TEST ====="
             );
 
-            testDataLayer();
+            testAnalyzeStock();
 
         }
     );
 }
-
 //checkAllStockData();
 
 async function testAnalyzeStock() {
