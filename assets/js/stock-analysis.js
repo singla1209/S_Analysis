@@ -113,8 +113,8 @@ const data = await loadStockCSV("TCS");
 
     // Latest trading session
 
-    const latest =
-        getLatestTradingDay(data);
+  const latest =
+    getLatestSession(data);
 
     console.log(
         "Latest trading session:",
