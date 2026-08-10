@@ -396,5 +396,11 @@ async function testAnalyzeStock() {
     console.table(result);
 }
 
-testAnalyzeStock();
+testAnalyzeStock()
+    .then(() => {
+        console.log("TCS ANALYSIS TEST FINISHED");
+    })
+    .catch(error => {
+        console.error("TCS ANALYSIS TEST ERROR:", error);
+    });
 
