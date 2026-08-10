@@ -203,7 +203,123 @@
         </div>
 
     </section>
+<section class="stock-analysis-section">
 
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <div>
+            <h2>Stock Analysis</h2>
+            <p class="text-muted mb-0">
+                NIFTY 50 technical analysis
+            </p>
+        </div>
+
+        <div>
+            <select id="stockSelector" class="form-select">
+                <option value="TCS">TCS</option>
+                <option value="RELIANCE">RELIANCE</option>
+                <option value="INFY">INFY</option>
+                <option value="HDFCBANK">HDFCBANK</option>
+            </select>
+        </div>
+    </div>
+
+    <div class="row g-3">
+
+        <div class="col-md-3">
+            <div class="card">
+                <div class="card-body">
+                    <small>Price</small>
+                    <h3 id="analysisPrice">--</h3>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-3">
+            <div class="card">
+                <div class="card-body">
+                    <small>Daily Change</small>
+                    <h3 id="analysisDailyChange">--</h3>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-3">
+            <div class="card">
+                <div class="card-body">
+                    <small>5 Day Return</small>
+                    <h3 id="analysisReturn5">--</h3>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-3">
+            <div class="card">
+                <div class="card-body">
+                    <small>20 Day Return</small>
+                    <h3 id="analysisReturn20">--</h3>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-3">
+            <div class="card">
+                <div class="card-body">
+                    <small>MA20</small>
+                    <h3 id="analysisMA20">--</h3>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-3">
+            <div class="card">
+                <div class="card-body">
+                    <small>MA50</small>
+                    <h3 id="analysisMA50">--</h3>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-3">
+            <div class="card">
+                <div class="card-body">
+                    <small>RSI (14)</small>
+                    <h3 id="analysisRSI">--</h3>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-3">
+            <div class="card">
+                <div class="card-body">
+                    <small>Volume Ratio</small>
+                    <h3 id="analysisVolumeRatio">--</h3>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-body">
+                    <small>Price vs MA20</small>
+                    <h3 id="analysisPriceVsMA20">--</h3>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-body">
+                    <small>Price vs MA50</small>
+                    <h3 id="analysisPriceVsMA50">--</h3>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <div id="analysisStatus" class="mt-3"></div>
+
+</section>
 
     <!-- =========================
          TOP 10 PREDICTIONS
