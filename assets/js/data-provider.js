@@ -431,5 +431,6 @@ export {
     getLatestTradingDay,
     getLastSessions,
     calculateDailyChange,
-    percentageChange
+    percentageChange,
+    checkAllStockData
 };
