@@ -629,6 +629,37 @@ function renderStockAnalysis(results) {
 }
 
 
+
+
+function renderFactorRanking(rankedResults) {
+    const tableBody = document.getElementById("factorRankingBody");
+
+    if (!tableBody) {
+        console.error("factorRankingBody not found");
+        return;
+    }
+
+    tableBody.innerHTML = rankedResults.map((stock, index) => `
+        <tr>
+            <td>${index + 1}</td>
+            <td><strong>${stock.symbol}</strong></td>
+
+            <td>${Number(stock.trendScore ?? 0).toFixed(1)}</td>
+            <td>${Number(stock.volumeScore ?? 0).toFixed(1)}</td>
+            <td>${Number(stock.supportScore ?? 0).toFixed(1)}</td>
+            <td>${Number(stock.technicalScore ?? 0).toFixed(1)}</td>
+
+            <td>${Number(stock.candleScore ?? 0).toFixed(1)}</td>
+            <td>${Number(stock.niftyScore ?? 0).toFixed(1)}</td>
+            <td>${Number(stock.sectorScore ?? 0).toFixed(1)}</td>
+            <td>${Number(stock.newsScore ?? 0).toFixed(1)}</td>
+            <td>${Number(stock.fnoScore ?? 0).toFixed(1)}</td>
+            <td>${Number(stock.sentimentScore ?? 0).toFixed(1)}</td>
+
+            <td><strong>${Number(stock.finalFactorScore ?? 0).toFixed(1)}</strong></td>
+        </tr>
+    `).join("");
+}
 // ==========================================
 // UPDATE INDIVIDUAL STOCK CARDS
 // ==========================================
@@ -910,7 +941,7 @@ const rankedResults =
 
      
 
-
+renderFactorRanking(rankedResults);
 
 // Render table
 renderStockAnalysis(
