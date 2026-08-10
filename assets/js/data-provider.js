@@ -524,6 +524,80 @@ function calculateRSI(data, period = 14) {
         (100 / (1 + relativeStrength))
     );
 }
+
+function calculateAverageVolume(data, days = 20) {
+
+    if (!Array.isArray(data) || data.length < days) {
+        return null;
+    }
+
+    const recent = data.slice(-days);
+
+    const total = recent.reduce(
+        (sum, row) => sum + row.volume,
+        0
+    );
+
+    return total / days;
+}
+
+
+function calculateVolumeRatio(data, days = 20) {
+
+    if (!Array.isArray(data) || data.length < days + 1) {
+        return null;
+    }
+
+    const latest = data[data.length - 1];
+
+    const previous = data.slice(
+        -(days + 1),
+        -1
+    );
+
+    const averageVolume =
+        previous.reduce(
+            (sum, row) => sum + row.volume,
+            0
+        ) / days;
+
+    if (averageVolume === 0) {
+        return null;
+    }
+
+    return latest.volume / averageVolume;
+}
+
+
+function calculateRecentHigh(data, days = 20) {
+
+    if (!Array.isArray(data) || data.length < days) {
+        return null;
+    }
+
+    const recent = data.slice(-days);
+
+    return Math.max(
+        ...recent.map(row => row.high)
+    );
+}
+
+
+function calculatePriceVsMA(price, movingAverage) {
+
+    if (
+        !Number.isFinite(price) ||
+        !Number.isFinite(movingAverage) ||
+        movingAverage === 0
+    ) {
+        return null;
+    }
+
+    return (
+        (price - movingAverage) /
+        movingAverage
+    ) * 100;
+}
 // ==========================================
 // EXPORT FUNCTIONS
 // ==========================================
@@ -538,5 +612,9 @@ export {
     checkAllStockData,
     calculateReturn,
     calculateMovingAverage,
-    calculateRSI
+    calculateRSI,
+    calculateAverageVolume,
+    calculateVolumeRatio,
+    calculateRecentHigh,
+    calculatePriceVsMA
 };
