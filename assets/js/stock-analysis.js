@@ -14,9 +14,12 @@ import {
     checkAllStockData,
     calculateReturn,
     calculateMovingAverage,
-    calculateRSI
+    calculateRSI,
+    calculateAverageVolume,
+    calculateVolumeRatio,
+    calculateRecentHigh,
+    calculatePriceVsMA
 } from "./data-provider.js";
-
 import {
     NIFTY50_STOCKS
 } from "./nifty50.js";
@@ -187,13 +190,60 @@ console.log(
     "MA50:",
     ma50?.toFixed(2)
 );
-
+   // 6. FOR RSI Calculation (14)
 const rsi =
     calculateRSI(data, 14);
 
 console.log(
     "RSI (14):",
     rsi?.toFixed(2)
+);
+
+  // 7. averate Volumen Calculation
+    const averageVolume =
+    calculateAverageVolume(data, 20);
+
+const volumeRatio =
+    calculateVolumeRatio(data, 20);
+
+const recentHigh =
+    calculateRecentHigh(data, 20);
+
+const priceVsMA20 =
+    calculatePriceVsMA(
+        latest.close,
+        ma20
+    );
+
+const priceVsMA50 =
+    calculatePriceVsMA(
+        latest.close,
+        ma50
+    );
+
+console.log(
+    "Average Volume (20):",
+    averageVolume?.toFixed(0)
+);
+
+console.log(
+    "Volume Ratio:",
+    volumeRatio?.toFixed(2) + "x"
+);
+
+console.log(
+    "20-day High:",
+    recentHigh?.toFixed(2)
+);
+
+console.log(
+    "Price vs MA20:",
+    priceVsMA20?.toFixed(2) + "%"
+);
+
+console.log(
+    "Price vs MA50:",
+    priceVsMA50?.toFixed(2) + "%"
 );
 
     const stocksAnalysed =
