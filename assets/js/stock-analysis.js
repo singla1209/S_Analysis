@@ -901,6 +901,26 @@ const resultsWithFactors =
         result => addFactorScores(result)
     );
 
+
+        console.log("===== FACTORS ADDED =====");
+
+console.table(
+    resultsWithFactors.map(stock => ({
+        symbol: stock.symbol,
+        trend: stock.factorTrend,
+        volume: stock.factorVolume,
+        support: stock.factorSupport,
+        technical: stock.factorTechnical,
+        candle: stock.factorCandle,
+        nifty: stock.factorNifty,
+        sector: stock.factorSector,
+        news: stock.factorNews,
+        fno: stock.factorFno,
+        sentiment: stock.factorSentiment,
+        finalScore: stock.finalFactorScore
+    }))
+);
+
 const rankedResults =
     rankStocksByFactorScore(resultsWithFactors);
 
