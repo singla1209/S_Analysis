@@ -1080,6 +1080,15 @@ rankedResults.forEach(stock => {
     stock.confidence = signal.confidence;
 });
 
+
+// TEMPORARY CHECK
+console.log("TOP 10 WITH SIGNALS:", top10Stocks.map(stock => ({
+    symbol: stock.symbol,
+    score: stock.finalFactorScore,
+    direction: stock.direction,
+    confidence: stock.confidence
+})));
+
 console.table(
     top10Stocks.map((stock, index) => ({
         rank: index + 1,
