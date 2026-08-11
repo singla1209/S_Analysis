@@ -379,23 +379,26 @@ function calculateCandleScore(result) {
 // NIFTY TREND
 // ==========================================
 
-function calculateNiftyScore(result) {
+function calculateSectorScore(result) {
 
-    /*
-     * NIFTY-specific data is not yet being supplied
-     * by stock-analysis.js.
-     *
-     * Therefore keep this factor neutral instead of
-     * inventing a NIFTY value.
-     */
-
-    if (Number.isFinite(result.niftyScore)) {
-        return Math.round(
-            clampScore(result.niftyScore)
-        );
+    if (!Number.isFinite(result.sectorChange)) {
+        return 5;
     }
 
-    return 5;
+    const change = result.sectorChange;
+
+    if (change >= 1.5) return 10;
+    if (change >= 0.75) return 9;
+    if (change >= 0.25) return 8;
+    if (change > 0) return 7;
+
+    if (change === 0) return 5;
+
+    if (change > -0.5) return 4;
+    if (change > -1.0) return 3;
+    if (change > -1.5) return 2;
+
+    return 1;
 }
 
 
