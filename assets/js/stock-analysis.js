@@ -14,10 +14,15 @@ import {
     calculateAverageVolume,
     calculateVolumeRatio,
     calculateRecentHigh,
-    calculatePriceVsMA
+    calculatePriceVsMA,
+     loadIndexCSV,
+    calculateIndexDailyChange
 } from "./data-provider.js";
 
-
+import {
+    getStockSector,
+    getSectorIndexFile
+} from "./sector-map.js";
 
 import {
     NIFTY50_STOCKS
@@ -364,17 +369,68 @@ async function analyzeAllStocks() {
     );
 
 
-    const results = [];
+  const results = [];
 
 
-    for (const symbol of NIFTY50_STOCKS) {
+// ==========================================
+// LOAD NIFTY 50 INDEX
+// ==========================================
 
-        const result =
-            await analyzeStock(symbol);
+const niftyData =
+    await loadIndexCSV("NIFTY50.csv");
 
-        results.push(result);
+const niftyChange =
+    calculateIndexDailyChange(niftyData);
+
+console.log(
+    "NIFTY 50 daily change:",
+    niftyChange
+);
+
+
+// ==========================================
+// ANALYZE 50 STOCKS
+// ==========================================
+
+for (const symbol of NIFTY50_STOCKS) {
+
+    const result =
+        await analyzeStock(symbol);
+
+    if (result.valid) {
+
+        // NIFTY factor input
+        result.niftyChange =
+            niftyChange;
+
+
+        // Sector factor input
+        const sector =
+            getStockSector(symbol);
+
+        const sectorFile =
+            getSectorIndexFile(sector);
+
+
+        if (sectorFile) {
+
+            const sectorData =
+                await loadIndexCSV(sectorFile);
+
+            result.sectorChange =
+                calculateIndexDailyChange(
+                    sectorData
+                );
+
+        } else {
+
+            result.sectorChange = null;
+
+        }
     }
 
+    results.push(result);
+}
 
     console.log(
         "================================"
