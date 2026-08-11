@@ -69,6 +69,31 @@ async function loadIndexCSV(fileName) {
     return parseCSV(csvText);
 }
 
+function calculateIndexDailyChange(data) {
+
+    if (!Array.isArray(data) || data.length < 2) {
+        return null;
+    }
+
+    const latest = data[data.length - 1];
+    const previous = data[data.length - 2];
+
+    if (
+        !latest ||
+        !previous ||
+        !Number.isFinite(latest.close) ||
+        !Number.isFinite(previous.close) ||
+        previous.close === 0
+    ) {
+        return null;
+    }
+
+    return (
+        (latest.close - previous.close) /
+        previous.close
+    ) * 100;
+}
+
 // ==========================================
 // CHECK ALL NIFTY 50 CSV FILES
 // ==========================================
@@ -637,5 +662,6 @@ export {
     calculateVolumeRatio,
     calculateRecentHigh,
     calculatePriceVsMA,
-    loadIndexCSV
+    loadIndexCSV,
+    calculateIndexDailyChange
 };
