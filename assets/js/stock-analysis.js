@@ -629,7 +629,56 @@ function renderStockAnalysis(results) {
 }
 
 
+function calculateSignal(stock) {
+    const score = Number(stock.finalFactorScore ?? 0);
+    const rsi = Number(stock.rsi ?? 50);
+    const priceVsMA20 = Number(stock.priceVsMA20 ?? 0);
+    const priceVsMA50 = Number(stock.priceVsMA50 ?? 0);
+    const return5 = Number(stock.return5 ?? 0);
+    const return20 = Number(stock.return20 ?? 0);
 
+    let direction = "Neutral";
+    let confidence = "Low";
+
+    // Direction
+    if (
+        score >= 6 &&
+        priceVsMA20 > 0 &&
+        priceVsMA50 > 0 &&
+        return20 > 0
+    ) {
+        direction = "Bullish";
+    } 
+    else if (
+        score <= 4 &&
+        priceVsMA20 < 0 &&
+        priceVsMA50 < 0 &&
+        return20 < 0
+    ) {
+        direction = "Bearish";
+    }
+
+    // Confidence
+    if (
+        score >= 7 &&
+        direction === "Bullish" &&
+        rsi >= 50 &&
+        rsi < 75
+    ) {
+        confidence = "High";
+    }
+    else if (
+        score >= 5.5 &&
+        direction !== "Neutral"
+    ) {
+        confidence = "Medium";
+    }
+
+    return {
+        direction,
+        confidence
+    };
+}
 
 function renderFactorRanking(rankedResults) {
 
@@ -1023,6 +1072,13 @@ const resultsWithFactors =
 const rankedResults =
     rankStocksByFactorScore(resultsWithFactors);
 const top10Stocks = rankedResults.slice(0, 10);
+        
+rankedResults.forEach(stock => {
+    const signal = calculateSignal(stock);
+
+    stock.direction = signal.direction;
+    stock.confidence = signal.confidence;
+});
 
 console.table(
     top10Stocks.map((stock, index) => ({
