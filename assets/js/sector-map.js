@@ -131,3 +131,7 @@ function getSectorIndexFile(sector) {
     return SECTOR_INDEX_FILES[sector] || null;
 }
 
+export {
+    getStockSector,
+    getSectorIndexFile
+};
