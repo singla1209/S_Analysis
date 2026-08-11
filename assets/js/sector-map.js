@@ -1,22 +1,24 @@
-
 // ============================================================
-// NIFTY 50 STOCK → SECTOR MAPPING
+// NIFTY 50 STOCK → AVAILABLE INDEX MAPPING
 // ============================================================
 
 const STOCK_SECTORS = {
 
-    // ---------------- BANKING ----------------
+    // ---------------- BANK ----------------
     "AXISBANK": "BANK",
     "HDFCBANK": "BANK",
     "ICICIBANK": "BANK",
     "KOTAKBANK": "BANK",
-    "SBIN": "BANK",
+
+    // ---------------- PSU BANK ----------------
+    "SBIN": "PSU_BANK",
 
     // ---------------- FINANCIAL SERVICES ----------------
     "BAJAJFINSV": "FINANCE",
     "BAJFINANCE": "FINANCE",
     "JIOFIN": "FINANCE",
     "SBILIFE": "FINANCE",
+    "SHRIRAMFIN": "FINANCE",
 
     // ---------------- IT ----------------
     "HCLTECH": "IT",
@@ -36,6 +38,7 @@ const STOCK_SECTORS = {
     "CIPLA": "PHARMA",
     "DRREDDY": "PHARMA",
     "SUNPHARMA": "PHARMA",
+    "MAXHEALTH": "PHARMA",
 
     // ---------------- FMCG ----------------
     "HINDUNILVR": "FMCG",
@@ -43,51 +46,31 @@ const STOCK_SECTORS = {
     "NESTLEIND": "FMCG",
     "TATACONSUM": "FMCG",
 
-    // ---------------- METALS ----------------
+    // ---------------- METAL ----------------
     "HINDALCO": "METAL",
     "JSWSTEEL": "METAL",
     "TATASTEEL": "METAL",
 
-    // ---------------- ENERGY / OIL ----------------
+    // ---------------- ENERGY ----------------
     "ONGC": "ENERGY",
     "RELIANCE": "ENERGY",
+    "NTPC": "ENERGY",
 
     // ---------------- INFRASTRUCTURE ----------------
     "LT": "INFRA",
     "POWERGRID": "INFRA",
-
-    // ---------------- CEMENT ----------------
-    "GRASIM": "CEMENT",
-    "ULTRACEMCO": "CEMENT",
-
-    // ---------------- TELECOM ----------------
-    "BHARTIARTL": "TELECOM",
-
-    // ---------------- DEFENCE ----------------
-    "BEL": "DEFENCE",
-
-    // ---------------- CONSUMER / RETAIL ----------------
-    "ASIANPAINT": "CONSUMER",
-    "TITAN": "CONSUMER",
-    "TRENT": "CONSUMER",
-
-    // ---------------- AVIATION ----------------
-    "INDIGO": "AVIATION",
-
-    // ---------------- INDUSTRIAL ----------------
-    "ADANIENT": "INDUSTRIAL",
-
-    // ---------------- PORTS / INFRA ----------------
     "ADANIPORTS": "INFRA",
 
-    // ---------------- POWER ----------------
-    "NTPC": "ENERGY",
-
-    // ---------------- MAX HEALTHCARE ----------------
-    "MAXHEALTH": "PHARMA",
-
-    // ---------------- SHRIRAM FINANCE ----------------
-    "SHRIRAMFIN": "FINANCE"
+    // ---------------- NO MATCHING DOWNLOADED INDEX ----------------
+    "GRASIM": null,
+    "ULTRACEMCO": null,
+    "BHARTIARTL": null,
+    "BEL": null,
+    "ASIANPAINT": null,
+    "TITAN": null,
+    "TRENT": null,
+    "INDIGO": null,
+    "ADANIENT": null
 };
 
 
@@ -98,23 +81,30 @@ const STOCK_SECTORS = {
 const SECTOR_INDEX_FILES = {
 
     BANK: "NIFTY_BANK.csv",
-    IT: "NIFTY_IT.csv",
-    AUTO: "NIFTY_AUTO.csv",
-    PHARMA: "NIFTY_PHARMA.csv",
-    FMCG: "NIFTY_FMCG.csv",
-    METAL: "NIFTY_METAL.csv",
-    ENERGY: "NIFTY_ENERGY.csv",
-    INFRA: "NIFTY_INFRA.csv",
-    FINANCE: "NIFTY_FIN_SERVICE.csv",
-    CONSUMER: null,
 
-    // These don't have a dedicated downloaded index
-    // in our current 14-file collection.
-    CEMENT: null,
-    TELECOM: null,
-    DEFENCE: null,
-    AVIATION: null,
-    INDUSTRIAL: null
+    PSU_BANK: "NIFTY_PSU_BANK.csv",
+
+    FINANCE: "NIFTY_FIN_SERVICE.csv",
+
+    IT: "NIFTY_IT.csv",
+
+    AUTO: "NIFTY_AUTO.csv",
+
+    PHARMA: "NIFTY_PHARMA.csv",
+
+    FMCG: "NIFTY_FMCG.csv",
+
+    METAL: "NIFTY_METAL.csv",
+
+    ENERGY: "NIFTY_ENERGY.csv",
+
+    INFRA: "NIFTY_INFRA.csv",
+
+    MEDIA: "NIFTY_MEDIA.csv",
+
+    MNC: "NIFTY_MNC.csv",
+
+    REALTY: "NIFTY_REALTY.csv"
 };
 
 
@@ -126,10 +116,14 @@ function getStockSector(symbol) {
     return STOCK_SECTORS[symbol] || null;
 }
 
-
 function getSectorIndexFile(sector) {
     return SECTOR_INDEX_FILES[sector] || null;
 }
+
+
+// ============================================================
+// EXPORTS
+// ============================================================
 
 export {
     getStockSector,
