@@ -49,6 +49,26 @@ async function loadStockCSV(symbol) {
     return parseCSV(csvText);
 }
 
+
+async function loadIndexCSV(fileName) {
+
+    const filePath = `data/${fileName}`;
+
+    console.log(`Loading index CSV: ${filePath}`);
+
+    const response = await fetch(filePath);
+
+    if (!response.ok) {
+        throw new Error(
+            `Unable to load ${filePath}. HTTP ${response.status}`
+        );
+    }
+
+    const csvText = await response.text();
+
+    return parseCSV(csvText);
+}
+
 // ==========================================
 // CHECK ALL NIFTY 50 CSV FILES
 // ==========================================
@@ -616,5 +636,6 @@ export {
     calculateAverageVolume,
     calculateVolumeRatio,
     calculateRecentHigh,
-    calculatePriceVsMA
+    calculatePriceVsMA,
+    loadIndexCSV
 };
