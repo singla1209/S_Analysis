@@ -106,7 +106,7 @@ const SECTOR_INDEX_FILES = {
     ENERGY: "NIFTY_ENERGY.csv",
     INFRA: "NIFTY_INFRA.csv",
     FINANCE: "NIFTY_FIN_SERVICE.csv",
-    CONSUMER: "NIFTY_CONSUMPTION.csv",
+    CONSUMER: null,
 
     // These don't have a dedicated downloaded index
     // in our current 14-file collection.
