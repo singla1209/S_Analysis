@@ -379,6 +379,33 @@ function calculateCandleScore(result) {
 // NIFTY TREND
 // ==========================================
 
+function calculateNiftyScore(result) {
+
+    if (!Number.isFinite(result.niftyChange)) {
+        return 5;
+    }
+
+    const change = result.niftyChange;
+
+    if (change >= 1.5) return 10;
+    if (change >= 0.75) return 9;
+    if (change >= 0.25) return 8;
+    if (change > 0) return 7;
+
+    if (change === 0) return 5;
+
+    if (change > -0.5) return 4;
+    if (change > -1.0) return 3;
+    if (change > -1.5) return 2;
+
+    return 1;
+}
+
+// ==========================================
+// FACTOR 7
+// SECTOR STRENGTH
+// ==========================================
+
 function calculateSectorScore(result) {
 
     if (!Number.isFinite(result.sectorChange)) {
@@ -400,33 +427,6 @@ function calculateSectorScore(result) {
 
     return 1;
 }
-
-
-// ==========================================
-// FACTOR 7
-// SECTOR STRENGTH
-// ==========================================
-
-function calculateSectorScore(result) {
-
-    /*
-     * Sector comparison requires sector data for all
-     * stocks. That data is not currently present in
-     * the result object.
-     *
-     * If sectorScore is supplied later, use it.
-     * Otherwise remain neutral.
-     */
-
-    if (Number.isFinite(result.sectorScore)) {
-        return Math.round(
-            clampScore(result.sectorScore)
-        );
-    }
-
-    return 5;
-}
-
 
 // ==========================================
 // FACTOR 8
