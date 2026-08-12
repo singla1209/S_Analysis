@@ -50,6 +50,36 @@ async function loadStockCSV(symbol) {
 }
 
 
+
+// ============================================================
+// LOAD F&O CSV
+// ============================================================
+
+async function loadFNOCSV(symbol) {
+
+    const filePath = `data/${symbol}.csv`;
+
+    console.log(
+        `Loading F&O CSV for ${symbol}:`,
+        filePath
+    );
+
+    const response = await fetch(filePath);
+
+    if (!response.ok) {
+
+        throw new Error(
+            `Unable to load ${filePath}. HTTP ${response.status}`
+        );
+    }
+
+    const csvText =
+        await response.text();
+
+    return parseCSV(csvText);
+}
+
+
 async function loadIndexCSV(fileName) {
 
     const filePath = `data/${fileName}`;
@@ -663,5 +693,6 @@ export {
     calculateRecentHigh,
     calculatePriceVsMA,
     loadIndexCSV,
+     loadFNOCSV,
     calculateIndexDailyChange
 };
