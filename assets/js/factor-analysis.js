@@ -461,22 +461,396 @@ function calculateNewsScore(result) {
 
 function calculateFnoScore(result) {
 
-    /*
-     * F&O / Open Interest data is not currently
-     * available in the stock result.
-     *
-     * Keep neutral until real OI data is connected.
-     */
+    // --------------------------------------------------------
+    // No F&O data
+    // --------------------------------------------------------
 
-    if (Number.isFinite(result.fnoScore)) {
-        return Math.round(
-            clampScore(result.fnoScore)
-        );
+    if (
+        !result ||
+        !Array.isArray(result.fnoData) ||
+        result.fnoData.length === 0
+    ) {
+        return 5;
     }
 
-    return 5;
-}
 
+    // --------------------------------------------------------
+    // Normalize column names
+    // --------------------------------------------------------
+
+    const rows =
+        result.fnoData.map(row => {
+
+            const normalized = {};
+
+            Object.keys(row).forEach(key => {
+
+                const cleanKey =
+                    String(key)
+                        .trim()
+                        .toUpperCase()
+                        .replace(/_/g, "");
+
+                normalized[cleanKey] =
+                    row[key];
+            });
+
+            return normalized;
+        });
+
+
+    // --------------------------------------------------------
+    // Helper
+    // --------------------------------------------------------
+
+    const numberValue = value => {
+
+        const n =
+            Number(
+                String(value)
+                    .replace(/,/g, "")
+                    .trim()
+            );
+
+        return Number.isFinite(n)
+            ? n
+            : 0;
+    };
+
+
+    // --------------------------------------------------------
+    // Separate Futures / Options
+    // --------------------------------------------------------
+
+    const futures = rows.filter(row => {
+
+        const optionType =
+            String(
+                row.OPTNTP ?? ""
+            )
+            .trim()
+            .toUpperCase();
+
+        const instrument =
+            String(
+                row.FININSTRMTP ?? ""
+            )
+            .trim()
+            .toUpperCase();
+
+        const name =
+            String(
+                row.FININSTRMNM ?? ""
+            )
+            .trim()
+            .toUpperCase();
+
+        // Options have CE / PE
+        if (
+            optionType === "CE" ||
+            optionType === "PE"
+        ) {
+            return false;
+        }
+
+        // Futures are generally identifiable
+        // through instrument/name
+        return (
+            instrument.includes("FUT") ||
+            name.includes("FUT")
+        );
+    });
+
+
+    const calls = rows.filter(row => {
+
+        return String(
+            row.OPTNTP ?? ""
+        )
+        .trim()
+        .toUpperCase() === "CE";
+
+    });
+
+
+    const puts = rows.filter(row => {
+
+        return String(
+            row.OPTNTP ?? ""
+        )
+        .trim()
+        .toUpperCase() === "PE";
+
+    });
+
+
+    // --------------------------------------------------------
+    // Futures OI
+    // --------------------------------------------------------
+
+    let futuresOI = 0;
+
+    let futuresOIChange = 0;
+
+    let futuresVolume = 0;
+
+
+    futures.forEach(row => {
+
+        futuresOI +=
+            numberValue(
+                row.OPNINTRST
+            );
+
+        futuresOIChange +=
+            numberValue(
+                row.CHNGINOPNINTRST
+            );
+
+        futuresVolume +=
+            numberValue(
+                row.TTLTRADGVOL
+            );
+
+    });
+
+
+    // --------------------------------------------------------
+    // Call / Put OI
+    // --------------------------------------------------------
+
+    let callOI = 0;
+
+    let putOI = 0;
+
+    let callOIChange = 0;
+
+    let putOIChange = 0;
+
+    let optionVolume = 0;
+
+
+    calls.forEach(row => {
+
+        callOI +=
+            numberValue(
+                row.OPNINTRST
+            );
+
+        callOIChange +=
+            numberValue(
+                row.CHNGINOPNINTRST
+            );
+
+        optionVolume +=
+            numberValue(
+                row.TTLTRADGVOL
+            );
+
+    });
+
+
+    puts.forEach(row => {
+
+        putOI +=
+            numberValue(
+                row.OPNINTRST
+            );
+
+        putOIChange +=
+            numberValue(
+                row.CHNGINOPNINTRST
+            );
+
+        optionVolume +=
+            numberValue(
+                row.TTLTRADGVOL
+            );
+
+    });
+
+
+    // --------------------------------------------------------
+    // Put / Call Ratio
+    // --------------------------------------------------------
+
+    let pcr = 1;
+
+    if (callOI > 0) {
+
+        pcr =
+            putOI / callOI;
+    }
+
+
+    // --------------------------------------------------------
+    // F&O activity
+    // --------------------------------------------------------
+
+    const totalOI =
+        futuresOI +
+        callOI +
+        putOI;
+
+    const totalVolume =
+        futuresVolume +
+        optionVolume;
+
+
+    // --------------------------------------------------------
+    // 1. FUTURES POSITIONING SCORE
+    // --------------------------------------------------------
+
+    let futuresScore = 5;
+
+
+    if (
+        futuresOI > 0 &&
+        Number.isFinite(result.dailyChange)
+    ) {
+
+        const priceUp =
+            result.dailyChange > 0;
+
+        const priceDown =
+            result.dailyChange < 0;
+
+        const oiUp =
+            futuresOIChange > 0;
+
+        const oiDown =
+            futuresOIChange < 0;
+
+
+        // Long buildup
+        if (
+            priceUp &&
+            oiUp
+        ) {
+            futuresScore = 9;
+        }
+
+        // Short buildup
+        else if (
+            priceDown &&
+            oiUp
+        ) {
+            futuresScore = 2;
+        }
+
+        // Short covering
+        else if (
+            priceUp &&
+            oiDown
+        ) {
+            futuresScore = 8;
+        }
+
+        // Long unwinding
+        else if (
+            priceDown &&
+            oiDown
+        ) {
+            futuresScore = 4;
+        }
+    }
+
+
+    // --------------------------------------------------------
+    // 2. PCR SCORE
+    // --------------------------------------------------------
+
+    let pcrScore = 5;
+
+
+    if (callOI > 0 && putOI > 0) {
+
+        if (pcr >= 1.30) {
+
+            pcrScore = 9;
+
+        } else if (pcr >= 1.10) {
+
+            pcrScore = 8;
+
+        } else if (pcr >= 0.90) {
+
+            pcrScore = 6;
+
+        } else if (pcr >= 0.70) {
+
+            pcrScore = 4;
+
+        } else {
+
+            pcrScore = 2;
+        }
+    }
+
+
+    // --------------------------------------------------------
+    // 3. DERIVATIVES ACTIVITY SCORE
+    // --------------------------------------------------------
+
+    let activityScore = 5;
+
+
+    if (totalOI > 0 && totalVolume > 0) {
+
+        const volumeToOI =
+            totalVolume /
+            totalOI;
+
+
+        if (volumeToOI >= 0.50) {
+
+            activityScore = 9;
+
+        } else if (volumeToOI >= 0.25) {
+
+            activityScore = 8;
+
+        } else if (volumeToOI >= 0.10) {
+
+            activityScore = 7;
+
+        } else if (volumeToOI >= 0.05) {
+
+            activityScore = 6;
+
+        } else {
+
+            activityScore = 5;
+        }
+    }
+
+
+    // --------------------------------------------------------
+    // FINAL F&O SCORE
+    // --------------------------------------------------------
+
+    const finalScore =
+        (
+            futuresScore * 0.45
+        ) +
+        (
+            pcrScore * 0.35
+        ) +
+        (
+            activityScore * 0.20
+        );
+
+
+    return Math.round(
+        Math.max(
+            1,
+            Math.min(
+                10,
+                finalScore
+            )
+        )
+    );
+}
 
 // ==========================================
 // FACTOR 10
