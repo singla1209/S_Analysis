@@ -16,6 +16,7 @@ import {
     calculateRecentHigh,
     calculatePriceVsMA,
      loadIndexCSV,
+    loadFNOCSV,
     calculateIndexDailyChange
 } from "./data-provider.js";
 
@@ -186,6 +187,27 @@ async function analyzeStock(symbol) {
 
         const data =
             await loadStockCSV(symbol);
+
+        // ----------------------------------
+// F&O DATA
+// ----------------------------------
+
+let fnoData = [];
+
+try {
+
+    fnoData =
+        await loadFNOCSV(symbol);
+
+} catch (error) {
+
+    console.warn(
+        `F&O data unavailable for ${symbol}:`,
+        error.message
+    );
+
+    fnoData = [];
+}
 
 
         const validation =
