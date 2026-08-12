@@ -346,7 +346,9 @@ try {
 
             priceVsMA20,
 
-            priceVsMA50
+            priceVsMA50,
+            
+            fnoData
 
         };
 
